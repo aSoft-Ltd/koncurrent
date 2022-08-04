@@ -1,0 +1,11 @@
+{
+  "name": "foundation-runtimes-koncurrent-later-test",
+  "version": "1.5.3",
+  "main": "foundation-runtimes-koncurrent-later-test.js",
+  "types": "foundation-runtimes-koncurrent-later-test.d.ts",
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundledDependencies": []
+}

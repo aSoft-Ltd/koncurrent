@@ -1,0 +1,109 @@
+$[log] Executing on Executor #M Mock
+$[log] Executing on Executor #M Mock
+$[log] Executing on Executor #1 Mock
+$[log] Executing on Executor #1 Mock
+$[log] Executing on Executor #1 Mock
+[log] processing block 1
+[log] Watching 1 pass by
+[log] Collecting 1
+$[log] Executing on Executor #2 Mock
+$[log] Executing on Executor #1 Mock
+[log] processing block 2
+[log] Watching 2 pass by
+[log] Collecting 2
+$[log] Executing on Executor #3 Mock
+$[log] Executing on Executor #2 Mock
+[log] processing block 3
+[log] Watching 2 pass by
+[log] Collecting 2
+ [log] Executing on Mock Exector
+[log] Collecting 0
+[log] Collected 0
+9[log] Haven't began collection, so this should run first
+ [log] Executing on Mock Exector
+[log] Emitting A
+[log] Collecting A
+[log] Emitting N
+[log] Collecting N
+[log] Emitting D
+[log] Collecting D
+[log] Emitting Y
+[log] Collecting Y
+[log] Finished emitting
+[log] Collected: ANDY
+ [log] Executing on Mock Exector
+ [log] Executing on Mock Exector
+ [log] Executing on Mock Exector
+[log] Seeing A
+[log] Collecting 'A'
+[log] Seeing N
+[log] Collecting 'N'
+[log] Seeing D
+[log] Collecting 'D'
+[log] Seeing Y
+[log] Collecting 'Y'
+[log] Collected: 'A''N''D''Y'
+ [log] Executing on Mock Exector
+ [log] Executing on Mock Exector
+[log] Collecting 1
+[log] Collecting 2
+$[log] Caught a nasty error: For fun
+[log] Collecting 3
+[log] Collecting 4
+[log] Collecting 5
+	 [log] Executing on Mock Exector
+	[log] Collecting 0
+	[log] Collected 0
+	
+ [log] Executing on Mock Exector
+	
+[log] Collecting 0
+	
+[log] Collected 0
+	9[log] Haven't began collection, so this should run first
+	 [log] Executing on Mock Exector
+	 [log] Executing on Mock Exector
+	[log] raw stuff
+	[log] receiving A
+	[log] Collected A
+	[log] receiving N
+	[log] Collected N
+	[log] receiving D
+	[log] Collected D
+	[log] receiving Y
+	[log] Collected Y
+	[log] Collected: ANDY
+	9[log] Haven't began collection, so this should run first
+	 [log] Executing on Mock Exector
+	[log] Emitting A
+	[log] Collected A
+	[log] Emitting N
+	[log] Collected N
+	[log] Emitting D
+	[log] Collected D
+	[log] Emitting Y
+	[log] Collected Y
+	[log] Finished emitting
+	[log] Collected: ANDY
+	9[log] Haven't began collection, so this should run first
+	 [log] Executing on Mock Exector
+	 [log] Executing on Mock Exector
+	 [log] Executing on Mock Exector
+	[log] Emitting A
+	[log] Interceptor 1: A
+	[log] Interceptor 2: A
+	[log] Collected A
+	[log] Emitting N
+	[log] Interceptor 1: N
+	[log] Interceptor 2: N
+	[log] Collected N
+	[log] Emitting D
+	[log] Interceptor 1: D
+	[log] Interceptor 2: D
+	[log] Collected D
+	[log] Emitting Y
+	[log] Interceptor 1: Y
+	[log] Interceptor 2: Y
+	[log] Collected Y
+	[log] Finished emitting
+	[log] Collected: ANDY

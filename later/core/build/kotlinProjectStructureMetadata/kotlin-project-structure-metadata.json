@@ -1,0 +1,134 @@
+{
+  "projectStructure": {
+    "formatVersion": "0.3.2",
+    "isPublishedAsRoot": "true",
+    "variants": [
+      {
+        "name": "iosArm32ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      },
+      {
+        "name": "iosArm64ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      },
+      {
+        "name": "iosX64ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      },
+      {
+        "name": "jsApiElements",
+        "sourceSet": [
+          "commonMain"
+        ]
+      },
+      {
+        "name": "jsRuntimeElements",
+        "sourceSet": [
+          "commonMain"
+        ]
+      },
+      {
+        "name": "jvmApiElements",
+        "sourceSet": [
+          "commonMain"
+        ]
+      },
+      {
+        "name": "jvmRuntimeElements",
+        "sourceSet": [
+          "commonMain"
+        ]
+      },
+      {
+        "name": "linuxX64ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      },
+      {
+        "name": "macosX64ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      },
+      {
+        "name": "tvosArm64ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      },
+      {
+        "name": "tvosX64ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      },
+      {
+        "name": "watchosArm32ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      },
+      {
+        "name": "watchosArm64ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      },
+      {
+        "name": "watchosX64ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      },
+      {
+        "name": "watchosX86ApiElements",
+        "sourceSet": [
+          "commonMain",
+          "nativeMain"
+        ]
+      }
+    ],
+    "sourceSets": [
+      {
+        "name": "commonMain",
+        "dependsOn": [],
+        "moduleDependency": [
+          "tz.co.asoft:koncurrent-primitives-core",
+          "tz.co.asoft:kotlinx-collections-atomic",
+          "org.jetbrains.kotlin:kotlin-stdlib-common"
+        ],
+        "binaryLayout": "klib"
+      },
+      {
+        "name": "nativeMain",
+        "dependsOn": [
+          "commonMain"
+        ],
+        "moduleDependency": [
+          "tz.co.asoft:koncurrent-primitives-core",
+          "tz.co.asoft:kotlinx-collections-atomic",
+          "org.jetbrains.kotlin:kotlin-stdlib-common"
+        ],
+        "sourceSetCInteropMetadataDirectory": "nativeMain-cinterop",
+        "binaryLayout": "klib"
+      }
+    ]
+  }
+}

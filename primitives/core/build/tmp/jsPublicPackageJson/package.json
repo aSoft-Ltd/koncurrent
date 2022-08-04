@@ -1,0 +1,11 @@
+{
+  "name": "foundation-runtimes-koncurrent-primitives-core",
+  "version": "1.5.3",
+  "main": "foundation-runtimes-koncurrent-primitives-core.js",
+  "types": "foundation-runtimes-koncurrent-primitives-core.d.ts",
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundledDependencies": []
+}

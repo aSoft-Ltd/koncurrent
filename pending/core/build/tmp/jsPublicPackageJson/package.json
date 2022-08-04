@@ -1,0 +1,11 @@
+{
+  "name": "foundation-runtimes-koncurrent-pending-core",
+  "version": "1.5.3",
+  "main": "foundation-runtimes-koncurrent-pending-core.js",
+  "types": "foundation-runtimes-koncurrent-pending-core.d.ts",
+  "devDependencies": {},
+  "dependencies": {},
+  "peerDependencies": {},
+  "optionalDependencies": {},
+  "bundledDependencies": []
+}
