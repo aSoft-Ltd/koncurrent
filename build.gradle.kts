@@ -12,6 +12,9 @@ import java.util.*
     alias(asoft.plugins.deploy)
 }
 
+// Incrememnt this counter, when you just need to make a dispatch
+val dispatchCount = 0
+
 allprojects {
     repositories {
         mavenCentral()
