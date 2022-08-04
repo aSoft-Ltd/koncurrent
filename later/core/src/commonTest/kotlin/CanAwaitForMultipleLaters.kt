@@ -1,12 +1,15 @@
 import expect.expect
 import koncurrent.Fulfilled
 import koncurrent.Later
+import koncurrent.MockExecutor
 import koncurrent.later.filterFulfilledValues
 import koncurrent.later.then
 import koncurrent.later.test
 import kotlin.test.Test
 
 class CanAwaitForMultipleLaters {
+
+    val executor = MockExecutor()
 
     @Test
     fun should_resolve_multiple_laters() = Later.all(
@@ -19,7 +22,7 @@ class CanAwaitForMultipleLaters {
         it.sum()
     }.then {
         expect(it).toBe(6)
-    }.test()
+    }.test(executor)
 
     @Test
     fun should_resolve_just_fulfilled_values() = Later.all(
@@ -31,5 +34,5 @@ class CanAwaitForMultipleLaters {
         it.filterFulfilledValues().sum()
     }.then {
         expect(it).toBe(1 + 2 + 3 + 4)
-    }.test()
+    }.test(executor)
 }

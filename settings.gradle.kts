@@ -37,8 +37,10 @@ rootProject.name = "koncurrent"
 // dependencies
 if (System.getenv("INCLUDE_BUILD") == "true") {
     includeBuild("../functions")
+    includeBuild("../expect")
 } else {
     includeSubs("functions", "../functions", "core")
+    includeSubs("expect", "../expect", "core", "coroutines")
 }
 
 // submodules

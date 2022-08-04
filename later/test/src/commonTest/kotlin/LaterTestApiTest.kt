@@ -1,17 +1,16 @@
 import expect.expect
-import koncurrent.Executors
-import koncurrent.Later
-import koncurrent.LaterTestResult
+import koncurrent.*
 import koncurrent.later.flatten
 import koncurrent.later.then
-import koncurrent.runLaterTest
 import koncurrent.later.test
 import kotlin.test.Test
 
 class LaterTestApiTest {
+    val executor = MockExecutor()
+
     @Test
-    fun should_be_able_to_run_later_tests() = runLaterTest(Executors.default()) {
-        Later.resolve(45).then {
+    fun should_be_able_to_run_later_tests() = runLaterTest(executor) {
+        Later.resolve(45, executor).then {
             it + 1
         }.then {
             println("expecting")
@@ -30,7 +29,7 @@ class LaterTestApiTest {
     }
 
     @Test
-    fun should_be_able_to_test_things_imperatively() = Later.resolve(45).flatten {
+    fun should_be_able_to_test_things_imperatively() = Later.resolve(45, executor).flatten {
         Later.resolve(it + 24)
     }.then {
         println("Expecting")

@@ -6,7 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LaterCanAwait {
-    val executor = Executors.default()
+    val executor = MockExecutor()
 
     @Test
     fun should_be_able_to_recover_on_a_failure(): TestResult {

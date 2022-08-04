@@ -130,22 +130,6 @@ class Later<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -
         executor = executor, onResolved = { value -> onResolved.invoke(value) }, onRejected = null
     )
 
-//    fun <S> flatten(onResolved: (T) -> Later<out S>, executor: Executor = this.executor): Later<out S> = when (val s = state) {
-//        is Fulfilled -> try {
-//            onResolved(s.value)
-//        } catch (err: Throwable) {
-//            Later.reject(err, executor)
-//        }
-//        is Rejected -> Later.reject(s.cause, executor)
-//        else -> {
-//            val later = Later<S>(executor = executor)
-//            then(executor = executor, onResolved = { res ->
-//                onResolved(res).then(executor = executor, onResolved = { later.resolveWith(it) }, onRejected = { later.rejectWith(it) })
-//            }, onRejected = { later.rejectWith(it) })
-//            later
-//        }
-//    }
-
     fun <S> flatten(onResolved: (T) -> Later<out S>, executor: Executor = this.executor): Later<out S> {
         val later = Later<S>(executor = executor)
         then(

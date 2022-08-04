@@ -45,6 +45,6 @@ kotlin {
 }
 
 aSoftOSSLibrary(
-    version = asoft.versions.foundation.get(),
+    version = asoft.versions.root.get(),
     description = "Primary building block needed for running concurrent multiplatform code"
 )

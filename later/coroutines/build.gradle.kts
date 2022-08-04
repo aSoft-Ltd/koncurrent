@@ -8,8 +8,8 @@ plugins {
 kotlin {
     jvm { library() }
     js(IR) { library() }
-//    val nativeTargets = nativeTargets(true)
-    val nativeTargets = linuxTargets(true)
+    val nativeTargets = nativeTargets(true)
+//    val nativeTargets = linuxTargets(true)
 
     sourceSets {
         val commonMain by getting {
@@ -21,13 +21,18 @@ kotlin {
 
         val commonTest by getting {
             dependencies {
-                implementation(asoft.expect.coroutines)
+                if (System.getenv("INCLUDE_BUILD") == "true") {
+                    implementation(asoft.expect.coroutines)
+                } else {
+                    implementation(project(":expect-coroutines"))
+                }
+                api(projects.koncurrentPrimitivesMock)
             }
         }
     }
 }
 
 aSoftOSSLibrary(
-    version = asoft.versions.foundation.get(),
+    version = asoft.versions.root.get(),
     description = "An multiplatform implementation of a Promised based api"
 )

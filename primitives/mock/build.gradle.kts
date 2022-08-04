@@ -21,6 +21,6 @@ kotlin {
 }
 
 aSoftOSSLibrary(
-    version = asoft.versions.foundation.get(),
+    version = asoft.versions.root.get(),
     description = "A mock implementation of primitives to be used in testing environments"
 )

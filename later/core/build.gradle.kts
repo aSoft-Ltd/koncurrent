@@ -9,8 +9,8 @@ kotlin {
     jvm { library(); withJava() }
     js(IR) { library() }
 
-//    val nativeTargets = nativeTargets(true)
-    val nativeTargets = linuxTargets(true)
+    val nativeTargets = nativeTargets(true)
+//    val nativeTargets = linuxTargets(true)
 
     sourceSets {
         val commonMain by getting {
@@ -22,7 +22,11 @@ kotlin {
 
         val commonTest by getting {
             dependencies {
-                implementation(asoft.expect.core)
+                if (System.getenv("INCLUDE_BUILD") == "true") {
+                    implementation(asoft.expect.core)
+                } else {
+                    implementation(project(":expect-core"))
+                }
                 implementation(projects.koncurrentPrimitivesMock)
                 implementation(projects.koncurrentLaterTest)
             }
@@ -43,6 +47,6 @@ kotlin {
 }
 
 aSoftOSSLibrary(
-    version = asoft.versions.foundation.get(),
+    version = asoft.versions.root.get(),
     description = "An multiplatform implementation of a Promised based api"
 )
