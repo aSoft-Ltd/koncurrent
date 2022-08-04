@@ -9,18 +9,16 @@ class LaterTestApiTest {
     val executor = MockExecutor()
 
     @Test
-    fun should_be_able_to_run_later_tests() = runLaterTest(executor) {
-        Later.resolve(45, executor).then {
-            it + 1
-        }.then {
-            println("expecting")
-            expect(it).toBe(46)
-            println("expected")
-            it * 10
-        }.then {
-            println("Another result: $it")
-        }
-    }
+    fun should_be_able_to_run_later_tests() = Later.resolve(45, executor).then {
+        it + 1
+    }.then {
+        println("expecting")
+        expect(it).toBe(46)
+        println("expected")
+        it * 10
+    }.then {
+        println("Another result: $it")
+    }.test()
 
     @Test
     fun can_return_after_some_computation(): LaterTestResult {

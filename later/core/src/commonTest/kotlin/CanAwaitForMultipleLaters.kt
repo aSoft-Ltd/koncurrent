@@ -22,7 +22,7 @@ class CanAwaitForMultipleLaters {
         it.sum()
     }.then {
         expect(it).toBe(6)
-    }.test(executor)
+    }.test()
 
     @Test
     fun should_resolve_just_fulfilled_values() = Later.all(
@@ -34,5 +34,5 @@ class CanAwaitForMultipleLaters {
         it.filterFulfilledValues().sum()
     }.then {
         expect(it).toBe(1 + 2 + 3 + 4)
-    }.test(executor)
+    }.test()
 }

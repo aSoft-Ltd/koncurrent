@@ -1,5 +1,8 @@
 package koncurrent.later
 
-import koncurrent.*
+import koncurrent.Later
+import koncurrent.LaterTestResult
 
-actual inline fun Later<*>.test(executor: Executor): LaterTestResult = runLaterTest(executor) { this }
+actual inline fun Later<out Any?>.test(): LaterTestResult {
+    toPending().get()
+}

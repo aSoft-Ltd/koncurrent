@@ -20,7 +20,7 @@ inline fun <T> Later<out T>.catch(
 
 fun <T> Later<out T>.finally(
     executor: Executor = this.executor,
-    cleanUp: (state: Settled<T>) -> Any?
+    cleanUp: (state: Settled<T>) -> Unit
 ) = cleanUp(executor = executor, cleanUp = cleanUp)
 
 fun <T, R> Later<out T>.flatten(

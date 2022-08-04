@@ -50,7 +50,7 @@ class Later<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -
     companion object {
         @JvmStatic
         @JvmOverloads
-        fun <T> resolve(value: T, executor: Executor = Executors.default()): Later<out T> {
+        fun <T> resolve(value: T, executor: Executor = SynchronousExecutor): Later<out T> {
             val l = Later<T>(executor = executor)
             l.resolveWith(value)
             return l
@@ -58,7 +58,7 @@ class Later<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -
 
         @JvmStatic
         @JvmOverloads
-        fun reject(error: Throwable, executor: Executor = Executors.default()): Later<out Nothing> {
+        fun reject(error: Throwable, executor: Executor = SynchronousExecutor): Later<out Nothing> {
             val l = Later<Nothing>(executor = executor)
             l.rejectWith(error)
             return l
@@ -78,7 +78,7 @@ class Later<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -
 
         @JvmStatic
         fun <T> all(vararg laters: Later<out T>): Later<out List<Settled<T>>> {
-            val later = Later<List<Settled<T>>>()
+            val later = Later<List<Settled<T>>>(executor = SynchronousExecutor)
             val states = laters.associateWith { it.state }.toMutableMap()
             laters.forEach { l ->
                 l.complete({ state ->
@@ -132,30 +132,22 @@ class Later<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -
 
     fun <S> flatten(onResolved: (T) -> Later<out S>, executor: Executor = this.executor): Later<out S> {
         val later = Later<S>(executor = executor)
-        then(
-            executor = executor,
-            onResolved = { res ->
-                executor.execute {
-                    try {
-                        val resolved = onResolved(res)
-                        resolved.then(
-                            executor = executor,
-                            onResolved = {
-                                later.resolveWith(it)
-                            },
-                            onRejected = {
-                                later.rejectWith(it)
-                            }
-                        )
-                    } catch (err: Throwable) {
-                        later.rejectWith(err)
-                    }
+        then(executor = executor, onResolved = { res ->
+            executor.execute {
+                try {
+                    val resolved = onResolved(res)
+                    resolved.then(executor = executor, onResolved = {
+                        later.resolveWith(it)
+                    }, onRejected = {
+                        later.rejectWith(it)
+                    })
+                } catch (err: Throwable) {
+                    later.rejectWith(err)
                 }
-            },
-            onRejected = {
-                later.rejectWith(it)
             }
-        )
+        }, onRejected = {
+            later.rejectWith(it)
+        })
         return later
     }
 

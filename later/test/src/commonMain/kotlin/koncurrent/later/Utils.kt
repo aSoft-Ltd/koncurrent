@@ -1,5 +1,6 @@
 package koncurrent.later
 
-import koncurrent.*
+import koncurrent.Later
+import koncurrent.LaterTestResult
 
-expect inline fun Later<*>.test(executor: Executor = Executors.default()): LaterTestResult
+expect inline fun Later<out Any?>.test(): LaterTestResult
