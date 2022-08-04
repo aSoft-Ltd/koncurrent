@@ -13,7 +13,7 @@ import java.util.*
 }
 
 // Incrememnt this counter, when you just need to make a dispatch
-val dispatchCount = 0
+val dispatchCount = 1
 
 allprojects {
     repositories {
