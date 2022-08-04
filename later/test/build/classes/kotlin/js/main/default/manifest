@@ -1,8 +1,0 @@
-abi_version=1.7.0
-builtins_platform=JS
-compiler_version=1.7.0
-depends=foundation-runtimes\:koncurrent-later-core foundation-runtimes\:expect-coroutines foundation-runtimes\:koncurrent-primitives-mock foundation-runtimes\:koncurrent-primitives-core foundation-runtimes\:kotlinx-collections-atomic foundation-runtimes\:expect-core foundation-runtimes\:functions foundation-runtimes\:kotlinx-collections-interoperable org.jetbrains.kotlinx\:kotlinx-coroutines-test org.jetbrains.kotlinx\:kotlinx-coroutines-core org.jetbrains.kotlinx\:atomicfu kotlin-test org.jetbrains.kotlinx\:kotlinx-serialization-core kotlin org.jetbrains.kotlin\:kotlinx-atomicfu-runtime
-ir_version=1.0.0
-jsOutputName=foundation-runtimes-koncurrent-later-test
-metadata_version=1.4.1
-unique_name=foundation-runtimes\:koncurrent-later-test

@@ -1,8 +1,0 @@
-abi_version=1.7.0
-builtins_platform=JS
-compiler_version=1.7.0
-depends=foundation-runtimes\:functions kotlin
-ir_version=1.0.0
-jsOutputName=foundation-runtimes-koncurrent-primitives-core
-metadata_version=1.4.1
-unique_name=foundation-runtimes\:koncurrent-primitives-core

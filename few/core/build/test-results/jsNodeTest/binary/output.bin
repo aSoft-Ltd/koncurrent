@@ -1,109 +1,0 @@
-Executing on Executor #M Mock
-Executing on Executor #M Mock
-Executing on Executor #1 Mock
-Executing on Executor #1 Mock
-Executing on Executor #1 Mock
-processing block 1
-Watching 1 pass by
-Collecting 1
-Executing on Executor #2 Mock
-Executing on Executor #1 Mock
-processing block 2
-Watching 2 pass by
-Collecting 2
-Executing on Executor #3 Mock
-Executing on Executor #2 Mock
-processing block 3
-Watching 2 pass by
-Collecting 2
-Executing on Mock Exector
-Collecting 0
-Collected 0
-3Haven't began collection, so this should run first
-Executing on Mock Exector
-Emitting A
-Collecting A
-Emitting N
-Collecting N
-Emitting D
-Collecting D
-Emitting Y
-Collecting Y
-Finished emitting
-Collected: ANDY
-Executing on Mock Exector
-Executing on Mock Exector
-Executing on Mock Exector
-	Seeing A
-Collecting 'A'
-	Seeing N
-Collecting 'N'
-	Seeing D
-Collecting 'D'
-	Seeing Y
-Collecting 'Y'
-Collected: 'A''N''D''Y'
-Executing on Mock Exector
-Executing on Mock Exector
-Collecting 1
-Collecting 2
-Caught a nasty error: For fun
-Collecting 3
-Collecting 4
-Collecting 5
-	Executing on Mock Exector
-	[log] Collecting 0
-	[log] Collected 0
-	
-Executing on Mock Exector
-	
-Collecting 0
-	
-Collected 0
-	3Haven't began collection, so this should run first
-	Executing on Mock Exector
-	Executing on Mock Exector
-	[log] raw stuff
-	[log] receiving A
-	Collected A
-	[log] receiving N
-	Collected N
-	[log] receiving D
-	Collected D
-	[log] receiving Y
-	Collected Y
-	Collected: ANDY
-	3Haven't began collection, so this should run first
-	Executing on Mock Exector
-	Emitting A
-	Collected A
-	Emitting N
-	Collected N
-	Emitting D
-	Collected D
-	Emitting Y
-	Collected Y
-	Finished emitting
-	Collected: ANDY
-	3Haven't began collection, so this should run first
-	Executing on Mock Exector
-	Executing on Mock Exector
-	Executing on Mock Exector
-	Emitting A
-	Interceptor 1: A
-	Interceptor 2: A
-	Collected A
-	Emitting N
-	Interceptor 1: N
-	Interceptor 2: N
-	Collected N
-	Emitting D
-	Interceptor 1: D
-	Interceptor 2: D
-	Collected D
-	Emitting Y
-	Interceptor 1: Y
-	Interceptor 2: Y
-	Collected Y
-	Finished emitting
-	Collected: ANDY

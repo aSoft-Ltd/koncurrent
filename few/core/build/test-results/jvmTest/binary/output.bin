@@ -1,96 +1,0 @@
-Executing on Executor #M Mock
-Executing on Executor #M Mock
-Executing on Executor #1 Mock
-Executing on Executor #1 Mock
-Executing on Executor #1 Mock
-processing block 1
-Watching 1 pass by
-Collecting 1
-Executing on Executor #2 Mock
-Executing on Executor #1 Mock
-processing block 2
-Watching 2 pass by
-Collecting 2
-Executing on Executor #3 Mock
-Executing on Executor #2 Mock
-processing block 3
-Watching 2 pass by
-Collecting 2
-3Haven't began collection, so this should run first
-Executing on Mock Exector
-Emitting A
-Collecting A
-Emitting N
-Collecting N
-Emitting D
-Collecting D
-Emitting Y
-Collecting Y
-Finished emitting
-Collected: ANDY
-Executing on Mock Exector
-Executing on Mock Exector
-Executing on Mock Exector
-	Seeing A
-Collecting 'A'
-	Seeing N
-Collecting 'N'
-	Seeing D
-Collecting 'D'
-	Seeing Y
-Collecting 'Y'
-Collected: 'A''N''D''Y'
-Executing on Mock Exector
-Collecting 0
-Collected 0
-Executing on Mock Exector
-Executing on Mock Exector
-Collecting 1
-Collecting 2
-Caught a nasty error: For fun
-Collecting 3
-Collecting 4
-Collecting 5
-	
-3Haven't began collection, so this should run first
-	
-Executing on Mock Exector
-	
-Emitting A
-	
-Collecting A
-	
-Emitting N
-	
-Collecting N
-	
-Emitting D
-	
-Collecting D
-	
-Emitting Y
-	
-Collecting Y
-	
-Finished emitting
-	
-Collected: ANDY
-	Executing on Mock Exector
-	Executing on Mock Exector
-	Collecting 'A'
-	Collecting 'N'
-	Collecting 'D'
-	Collecting 'Y'
-	Collected: 'A''N''D''Y'
-	Executing on Mock Exector
-	Emitting 0
-	Collecting 0
-	Collected 0
-	Executing on Mock Exector
-	Executing on Mock Exector
-	Emitting 1
-	Collecting 1A
-	Emitting 2
-	Collecting 2A
-	Emitting 3
-	Collecting 3A
