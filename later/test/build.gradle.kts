@@ -16,9 +16,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 if (System.getenv("INCLUDE_BUILD") == "true") {
-                    implementation(asoft.expect.coroutines)
+                    api(asoft.expect.coroutines)
                 } else {
-                    implementation(project(":expect-coroutines"))
+                    api(project(":expect-coroutines"))
                 }
 
                 api(projects.koncurrentLaterCore)
