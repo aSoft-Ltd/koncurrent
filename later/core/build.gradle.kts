@@ -16,13 +16,13 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(projects.koncurrentPrimitivesCore)
-                api(projects.kotlinxCollectionsAtomic)
+                api(asoft.kotlinx.collections.atomic)
             }
         }
 
         val commonTest by getting {
             dependencies {
-                implementation(projects.expectCore)
+                implementation(asoft.expect.core)
                 implementation(projects.koncurrentPrimitivesMock)
                 implementation(projects.koncurrentLaterTest)
             }

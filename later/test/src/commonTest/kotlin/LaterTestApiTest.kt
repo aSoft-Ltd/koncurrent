@@ -1,6 +1,7 @@
 import expect.expect
 import koncurrent.Executors
 import koncurrent.Later
+import koncurrent.LaterTestResult
 import koncurrent.later.flatten
 import koncurrent.later.then
 import koncurrent.runLaterTest
@@ -23,7 +24,7 @@ class LaterTestApiTest {
     }
 
     @Test
-    fun can_return_after_some_computation() {
+    fun can_return_after_some_computation(): LaterTestResult {
         val int = 6
         return Later.resolve(int).test()
     }

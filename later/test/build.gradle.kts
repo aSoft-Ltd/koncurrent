@@ -16,8 +16,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(projects.koncurrentLaterCore)
-                api(projects.expectCoroutines)
                 api(projects.koncurrentPrimitivesMock)
+                api(asoft.expect.coroutines)
             }
         }
 

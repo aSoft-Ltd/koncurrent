@@ -1,0 +1,7 @@
+[versions]
+kotlin = "1.7.10"
+
+[plugins]
+multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+js = { id = "org.jetbrains.kotlin.js", version.ref = "kotlin" }
