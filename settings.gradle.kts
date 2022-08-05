@@ -32,16 +32,11 @@ fun includeSubs(base: String, path: String = base, vararg subs: String) {
 
 val tmp = 1
 
-rootProject.name = "koncurrent"
+rootProject.name = "root"
 
 // dependencies
-if (System.getenv("INCLUDE_BUILD") == "true") {
-    includeBuild("../functions")
-    includeBuild("../expect")
-} else {
-    includeSubs("functions", "../functions", "core")
-    includeSubs("expect", "../expect", "core", "coroutines")
-}
+includeSubs("functions", "../functions", "core")
+includeSubs("expect", "../expect", "core", "coroutines")
 
 // submodules
 includeSubs("koncurrent-primitives", "primitives", "core", "coroutines", "mock")

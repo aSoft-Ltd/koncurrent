@@ -21,11 +21,7 @@ kotlin {
 
         val commonTest by getting {
             dependencies {
-                if (System.getenv("INCLUDE_BUILD") == "true") {
-                    implementation(asoft.expect.coroutines)
-                } else {
-                    implementation(project(":expect-coroutines"))
-                }
+                implementation(project(":expect-coroutines"))
                 api(projects.koncurrentPrimitivesMock)
             }
         }

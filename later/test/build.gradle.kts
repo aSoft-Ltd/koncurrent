@@ -15,11 +15,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                if (System.getenv("INCLUDE_BUILD") == "true") {
-                    api(asoft.expect.coroutines)
-                } else {
-                    api(project(":expect-coroutines"))
-                }
+                api(project(":expect-coroutines"))
 
                 api(projects.koncurrentLaterCore)
                 api(projects.koncurrentPrimitivesMock)

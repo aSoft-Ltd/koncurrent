@@ -28,15 +28,15 @@ allprojects {
     }
 
 //    if (System.getenv("INCLUDE_BUILD") == "true")
-    afterEvaluate {
-        afterEvaluate {
-            tasks.configureEach {
-                if (name.endsWith("MainKotlinMetadata")) {
-                    enabled = false
-                }
-            }
-        }
-    }
+//    afterEvaluate {
+//        afterEvaluate {
+//            tasks.configureEach {
+//                if (name.endsWith("MainKotlinMetadata")) {
+//                    enabled = false
+//                }
+//            }
+//        }
+//    }
 }
 
 //val releases = file("Release.next.md").readText()

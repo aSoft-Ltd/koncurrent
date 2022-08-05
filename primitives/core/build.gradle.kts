@@ -14,11 +14,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                if (System.getenv("INCLUDE_BUILD") == "true") {
-                    api(asoft.functions.core)
-                } else {
-                    api(project(":functions-core"))
-                }
+                api(project(":functions-core"))
             }
         }
 
