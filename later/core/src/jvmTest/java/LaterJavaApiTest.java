@@ -8,11 +8,15 @@ import java.util.concurrent.ExecutionException;
 public class LaterJavaApiTest {
 
     Later<Integer> getLater() {
-        return (Later<Integer>) Later.resolve(2);
+        return Later.resolve(2);
     }
 
     CompletableFuture<Integer> getFuture() {
-//        return (CompletableFuture<Integer>) getLater().toCompletableFuture();
+        getLater().then(i -> {
+            System.out.println(i);
+            return i + 1;
+        }).toCompletable();
+
         return CompletableFuture.completedFuture(2);
     }
 

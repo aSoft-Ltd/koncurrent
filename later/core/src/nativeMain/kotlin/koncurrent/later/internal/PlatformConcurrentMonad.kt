@@ -1,5 +1,5 @@
 package koncurrent.later.internal
 
-import koncurrent.Later
+import koncurrent.LaterPromise
 
-actual typealias PlatformConcurrentMonad<T> = Later<T>
+actual typealias PlatformConcurrentMonad<T> = LaterPromise<T>

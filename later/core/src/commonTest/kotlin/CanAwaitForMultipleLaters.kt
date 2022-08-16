@@ -3,7 +3,6 @@ import koncurrent.Fulfilled
 import koncurrent.Later
 import koncurrent.MockExecutor
 import koncurrent.later.filterFulfilledValues
-import koncurrent.later.then
 import koncurrent.later.test
 import kotlin.test.Test
 

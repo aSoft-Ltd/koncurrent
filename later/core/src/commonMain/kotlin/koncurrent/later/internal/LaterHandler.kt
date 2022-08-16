@@ -1,7 +1,7 @@
 package koncurrent.later.internal
 
-import functions.Consumer
+import functions.Callback
 
-fun interface LaterHandler<T> {
-    fun execute(resolve: Consumer<T>, reject: Consumer<Throwable>)
+fun interface LaterHandler<out T> {
+    fun execute(resolve: Callback<T>, reject: Callback<Throwable>)
 }

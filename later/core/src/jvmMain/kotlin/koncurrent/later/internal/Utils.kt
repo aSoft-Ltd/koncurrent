@@ -4,11 +4,12 @@ package koncurrent.later.internal
 
 import koncurrent.Executor
 import koncurrent.Later
+import koncurrent.LaterPromise
 import koncurrent.later.internal.PlatformConcurrentMonad
 import java.util.concurrent.CompletableFuture
 import java.util.function.BiConsumer
 
-internal actual fun <T> Later<T>.toPlatformConcurrentMonad(executor: Executor): PlatformConcurrentMonad<out T> {
+internal actual fun <T> LaterPromise<T>.toPlatformConcurrentMonad(executor: Executor): PlatformConcurrentMonad<out T> {
     val future = CompletableFuture<T>()
     then(
         executor = executor,
@@ -17,5 +18,3 @@ internal actual fun <T> Later<T>.toPlatformConcurrentMonad(executor: Executor): 
     )
     return future
 }
-
-internal actual fun <T> Later<T>.toPlatformConcurrentMonad(): PlatformConcurrentMonad<out T> = toPlatformConcurrentMonad(executor)

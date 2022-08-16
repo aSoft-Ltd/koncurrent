@@ -32,7 +32,7 @@ fun includeSubs(base: String, path: String = base, vararg subs: String) {
 
 val tmp = 1
 
-rootProject.name = "root"
+rootProject.name = "asoft"
 
 // dependencies
 includeSubs("functions", "../functions", "core")
