@@ -1,5 +1,5 @@
 [versions]
-compose = "1.0.1"
+compose = "1.2.0-alpha01-dev755" # "1.0.1"
 
 [plugins]
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
