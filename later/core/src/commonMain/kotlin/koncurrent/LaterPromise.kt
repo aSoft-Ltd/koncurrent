@@ -104,7 +104,6 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     @JvmSynthetic
     override fun <R> then(onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?, executor: Executor): LaterPromise<R> {
         val later = LaterPromise<R>(executor = executor)
-        later.progressQueue.addAll(progressQueue.toList())
         val item = LaterQueueItem(later = later, resolver = onResolved, rejecter = onRejected)
         thenQueue.add(item)
         when (val s = state) {
@@ -183,8 +182,20 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         return this
     }
 
-    override fun updateProgress(done: Long, total: Long) {
-        progressQueue.forEach { it(Progress(done, total)) }
+    override fun updateProgress(done: Long, total: Long): Boolean {
+        if (state !is PendingState) {
+            return false
+        }
+        progressQueue.forEach { callback ->
+            callback(Progress(done, total))
+        }
+        (thenQueue + finallyQueue).forEach {
+            executor.execute {
+                val later = it.later as LaterPromise<Any?>
+                later.updateProgress(done, total)
+            }
+        }
+        return true
     }
 
     override fun resolveWith(value: @UnsafeVariance T): Boolean {

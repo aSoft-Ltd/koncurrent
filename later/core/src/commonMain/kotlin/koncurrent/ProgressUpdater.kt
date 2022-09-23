@@ -6,5 +6,5 @@ package koncurrent
 import kotlin.js.JsExport
 
 interface ProgressUpdater {
-    fun updateProgress(done: Long, total: Long)
+    fun updateProgress(done: Long, total: Long): Boolean
 }
