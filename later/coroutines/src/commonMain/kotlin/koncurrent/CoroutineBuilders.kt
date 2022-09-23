@@ -9,7 +9,7 @@ fun <T> CoroutineScope.later(
     start: CoroutineStart = CoroutineStart.DEFAULT,
     block: suspend CoroutineScope.() -> T
 ): Later<T> {
-    val later = Later.pending<T>()
+    val later = LaterPromise.pending<T>()
     launch(context, start) {
         try {
             later.resolveWith(block())

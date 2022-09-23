@@ -3,6 +3,7 @@
 
 package koncurrent
 
+import functions.Callback
 import functions.Consumer
 import functions.Function
 import koncurrent.later.filterFulfilled
@@ -156,7 +157,9 @@ interface Later<out T> {
     @JsName("_ignore_toPromise")
     fun toCompletable(executor: Executor): PlatformConcurrentMonad<out T>
 
-    fun resolveWith(value: @UnsafeVariance T): Boolean
+    @JvmSynthetic
+    fun progress(callback: (Progress) -> Unit): Later<T>
 
-    fun rejectWith(error: Throwable): Boolean
+    @JsName("_ignore_progress")
+    fun progress(callback: Callback<Progress>): Later<T>
 }

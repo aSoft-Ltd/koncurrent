@@ -3,6 +3,7 @@
 
 package koncurrent
 
+import functions.Callback
 import koncurrent.later.filterFulfilled
 import koncurrent.later.filterFulfilledValues
 import koncurrent.later.internal.LaterHandler
@@ -21,7 +22,7 @@ import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 import kotlin.jvm.JvmSynthetic
 
-class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)? = null, val executor: Executor = Executors.default()) : Later<T> {
+class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)? = null, val executor: Executor = Executors.default()) : PendingLater<T> {
 
     @JsName("_ignore_fromHandler")
     @JvmOverloads
@@ -29,6 +30,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
 
     private val thenQueue = mutableAtomicListOf<LaterQueueItem<T, *>>()
     private val finallyQueue = mutableAtomicListOf<LaterQueueItem<T, *>>()
+    private val progressQueue = mutableAtomicListOf<(Progress) -> Unit>()
 
     @JvmSynthetic
     @JsName("_ignore_state")
@@ -102,6 +104,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     @JvmSynthetic
     override fun <R> then(onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?, executor: Executor): LaterPromise<R> {
         val later = LaterPromise<R>(executor = executor)
+        later.progressQueue.addAll(progressQueue.toList())
         val item = LaterQueueItem(later = later, resolver = onResolved, rejecter = onRejected)
         thenQueue.add(item)
         when (val s = state) {
@@ -157,6 +160,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         }
 
         val later = LaterPromise<T>(executor = executor)
+        later.progressQueue.addAll(progressQueue.toList())
         val resolve = { value: T ->
             cleanUp(Fulfilled(value))
             value
@@ -172,6 +176,16 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     override fun toCompletable(): PlatformConcurrentMonad<out T> = toPlatformConcurrentMonad(executor)
 
     override fun toCompletable(executor: Executor): PlatformConcurrentMonad<out T> = toPlatformConcurrentMonad(executor)
+
+    override fun progress(callback: Callback<Progress>): Later<T> = progress(callback::invoke)
+    override fun progress(callback: (Progress) -> Unit): Later<T> {
+        progressQueue.add(callback)
+        return this
+    }
+
+    override fun updateProgress(done: Long, total: Long) {
+        progressQueue.forEach { it(Progress(done, total)) }
+    }
 
     override fun resolveWith(value: @UnsafeVariance T): Boolean {
         if (state is PendingState) {
@@ -198,7 +212,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     private fun propagateFulfilled(value: T) {
         thenQueue.forEach {
             executor.execute {
-                val later = it.later
+                val later = it.later as PendingLater<Any?>
                 try {
                     val resolver = it.resolver
                     if (resolver != null) {
@@ -213,7 +227,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         }
         finallyQueue.forEach {
             executor.execute {
-                val later = it.later
+                val later = it.later as PendingLater<Any?>
                 try {
                     val resolver = it.resolver
                     if (resolver != null) later.resolveWith(resolver(value))
@@ -234,7 +248,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
 
     private fun propagateRejected(error: Throwable) {
         thenQueue.forEach {
-            val later = it.later
+            val later = it.later as PendingLater<Any?>
             executor.execute {
                 try {
                     val rejecter = it.rejecter
@@ -251,7 +265,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         }
 
         finallyQueue.forEach {
-            val later = it.later
+            val later = it.later as PendingLater<Any?>
             executor.execute {
                 try {
                     val rejecter = it.rejecter

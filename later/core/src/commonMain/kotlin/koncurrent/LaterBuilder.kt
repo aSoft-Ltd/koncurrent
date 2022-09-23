@@ -8,11 +8,11 @@ inline fun <T> Later(
 ): Later<T> = LaterPromise(handler, executor)
 
 
-inline fun <T> Executor.later(noinline builder: Executor.() -> T): Later<T> {
-    val l = Later.pending<T>(executor = this)
+inline fun <T> Executor.later(noinline builder: Executor.(ProgressUpdater) -> T): Later<T> {
+    val l = LaterPromise.pending<T>(executor = this)
     execute {
         try {
-            l.resolveWith(builder())
+            l.resolveWith(builder(l))
         } catch (err: Throwable) {
             l.rejectWith(err)
         }
