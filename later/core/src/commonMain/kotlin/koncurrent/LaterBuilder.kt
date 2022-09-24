@@ -7,6 +7,7 @@ inline fun <T> Later(
     noinline handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)
 ): Later<T> = LaterPromise(handler, executor)
 
+inline fun <T> PendingLater(executor: Executor = SynchronousExecutor): PendingLater<T> = LaterPromise.pending(executor)
 
 inline fun <T> Executor.later(noinline builder: Executor.(ProgressUpdater) -> T): Later<T> {
     val l = LaterPromise.pending<T>(executor = this)
