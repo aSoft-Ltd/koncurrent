@@ -24,7 +24,7 @@ class CanAwaitForMultipleLaters {
     }.test()
 
     @Test
-    fun should_resolve_just_fulfilled_values() = Later.all(
+    fun should_resolve_just_fulfilled_values() = Later.all<Int>(
         Later { res, _ -> res(1) },
         Later { res, _ -> res(2) },
         Later { res, _ -> res(3) },

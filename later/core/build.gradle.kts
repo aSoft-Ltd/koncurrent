@@ -16,6 +16,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(projects.koncurrentPrimitivesCore)
+                api(projects.kollectionsInteroperable)
                 api(asoft.kotlinx.collections.atomic)
             }
         }

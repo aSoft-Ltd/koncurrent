@@ -1,9 +1,9 @@
-@file:JsExport
-@file:Suppress("NON_EXPORTABLE_TYPE")
+@file:JsExport @file:Suppress("NON_EXPORTABLE_TYPE")
 
 package koncurrent
 
 import functions.Callback
+import kollections.toIList
 import koncurrent.later.filterFulfilled
 import koncurrent.later.filterFulfilledValues
 import koncurrent.later.internal.LaterHandler
@@ -31,10 +31,13 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     private val thenQueue = mutableAtomicListOf<LaterQueueItem<T, *>>()
     private val finallyQueue = mutableAtomicListOf<LaterQueueItem<T, *>>()
     private val progressQueue = mutableAtomicListOf<(Progress) -> Unit>()
+    private val progressStateQueue = mutableAtomicListOf<(ProgressState) -> Unit>()
 
     @JvmSynthetic
     @JsName("_ignore_state")
     var state: ConcurrentState<T> = PendingState
+
+    private var stages = mutableMapOf<String, StageProgress>()
 
     init {
         executor.execute {
@@ -177,10 +180,18 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     override fun toCompletable(executor: Executor): PlatformConcurrentMonad<out T> = toPlatformConcurrentMonad(executor)
 
     override fun progress(callback: Callback<Progress>): Later<T> = progress(callback::invoke)
+
     override fun progress(callback: (Progress) -> Unit): Later<T> {
         progressQueue.add(callback)
         return this
     }
+
+    override fun onUpdate(callback: (ProgressState) -> Unit): Later<T> {
+        progressStateQueue.add(callback)
+        return this
+    }
+
+    override fun onUpdate(callback: Callback<ProgressState>): Later<T> = onUpdate(callback::invoke)
 
     override fun updateProgress(done: Long, total: Long): Boolean {
         if (state !is PendingState) {
@@ -193,6 +204,38 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
             executor.execute {
                 val later = it.later as LaterPromise<Any?>
                 later.updateProgress(done, total)
+            }
+        }
+        return true
+    }
+
+    override fun setStages(vararg stages: String): kotlin.collections.List<Stage> {
+        this.stages.clear()
+        val sgs = stages.mapIndexed { index, s ->
+            Stage(s, index, stages.size)
+        }.associate { it.name to it(0, 0) }
+        this.stages = sgs.toMutableMap()
+        return sgs.values.toList()
+    }
+
+    override fun updateProgress(progress: StageProgress): Boolean {
+        if (state !is PendingState) {
+            return false
+        }
+        val newStages = stages.toMutableMap()
+        newStages[progress.name] = progress
+        stages = newStages
+        val pState = ProgressState(
+            current = progress,
+            stages = stages.values.toIList()
+        )
+        progressStateQueue.forEach { callback ->
+            callback(pState)
+        }
+        (thenQueue + finallyQueue).forEach {
+            executor.execute {
+                val later = it.later as LaterPromise<Any?>
+                later.updateProgress(progress)
             }
         }
         return true

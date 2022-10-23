@@ -16,6 +16,9 @@ data class Progress(
     @JsName("of")
     constructor(done: Double, total: Double) : this(done.toLong(), total.toLong())
 
+    val doneBytesAsDouble get() = done.toDouble()
+    val totalBytesAsDouble get() = total.toDouble()
+
     val doneFraction = done.toDouble() / total.toDouble()
 
     val donePercentage = 100 * doneFraction

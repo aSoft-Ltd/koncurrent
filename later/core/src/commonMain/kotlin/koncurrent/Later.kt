@@ -157,9 +157,16 @@ interface Later<out T> {
     @JsName("_ignore_toPromise")
     fun toCompletable(executor: Executor): PlatformConcurrentMonad<out T>
 
+    @Deprecated("In favour of onUpdate")
     @JvmSynthetic
     fun progress(callback: (Progress) -> Unit): Later<T>
 
+    @Deprecated("In favour of onUpdate")
     @JsName("_ignore_progress")
     fun progress(callback: Callback<Progress>): Later<T>
+
+    fun onUpdate(callback: (ProgressState) -> Unit): Later<T>
+
+    @JsName("_ignore_onUpdate")
+    fun onUpdate(callback: Callback<ProgressState>): Later<T>
 }

@@ -16,8 +16,8 @@ fun <T> Later<T>.asDeferred(scope: CoroutineScope): Deferred<T> = scope.async(st
  * If this [Later] is already in a [Settled] state,
  * it returns the [Fulfilled.value] immediately or throws the [Rejected.cause]
  */
-suspend fun <T> Later<T>.await(onProgress: ((Progress) -> Unit)? = null): T = suspendCancellableCoroutine<T> { cont ->
-    if (onProgress != null) progress(onProgress)
+suspend fun <T> Later<T>.await(onUpdate: ((ProgressState) -> Unit)? = null): T = suspendCancellableCoroutine { cont ->
+    if (onUpdate != null) this.onUpdate(onUpdate)
     finally {
         when (it) {
             is Fulfilled -> cont.resume(it.value)
