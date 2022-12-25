@@ -35,16 +35,6 @@ fun <T, R> Later<T>.andThen(
     onResolved: (T) -> Later<R>
 ) = andThen(onResolved, executor)
 
-@Deprecated("In favour of andThen", ReplaceWith("andThen(onResolved, executor)"))
-fun <T, R> Later<T>.flatten(
-    executor: Executor,
-    onResolved: (T) -> Later<R>
-) = andThen(onResolved, executor)
-
-inline fun <T> Later<Later<T>>.flatten(executor: Executor): Later<T> = andThen(executor) { it }
-
-inline fun <T> Later<Later<T>>.flatten(): Later<T> = andThen { it }
-
 @JvmName("filterFulfilledFromSettled")
 inline fun <T> List<Settled<T>>.filterFulfilled(): List<Fulfilled<T>> = filterIsInstance<Fulfilled<T>>().toInteroperableList()
 

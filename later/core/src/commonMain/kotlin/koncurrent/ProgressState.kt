@@ -4,6 +4,7 @@
 package koncurrent
 
 import kollections.List
+import kollections.iListOf
 import kotlin.js.JsExport
 import kotlin.math.round
 
@@ -19,6 +20,18 @@ data class ProgressState(
             stages.forEach { stage ->
                 total += interval * stage.doneFraction
             }
-           round(total)
+            round(total)
         }
+
+    companion object {
+
+        fun initial(): ProgressState {
+            val stage = Stage("Initial", 1, 1)
+            val current = stage(0, 100)
+            return ProgressState(
+                current = current,
+                stages = iListOf(current)
+            )
+        }
+    }
 }

@@ -103,24 +103,6 @@ interface Later<out T> {
     @JsName("_ignore_andThenFunction")
     fun <R> andThen(onResolved: Function<T, Later<R>>): Later<R> = andThen(onResolved::invoke)
 
-    @JsName("_ignore_flattenWithExecutor")
-    @JvmSynthetic
-    @Deprecated("In favour of andThen", ReplaceWith("andThen(onResolved, executor)"))
-    fun <R> flatten(onResolved: (T) -> Later<R>, executor: Executor): Later<R> = andThen(onResolved, executor)
-
-    @JsName("_ignore_flatten")
-    @JvmSynthetic
-    @Deprecated("In favour of andThen", ReplaceWith("andThen(onResolved, executor)"))
-    fun <R> flatten(onResolved: (T) -> Later<R>): Later<R> = andThen(onResolved)
-
-    @JsName("_ignore_flattenFunctionWithExecutor")
-    @Deprecated("In favour of andThen", ReplaceWith("andThen(onResolved, executor)"))
-    fun <R> flatten(onResolved: Function<T, Later<R>>, executor: Executor): Later<R> = andThen(onResolved::invoke, executor)
-
-    @JsName("_ignore_flattenFunction")
-    @Deprecated("In favour of andThen", ReplaceWith("andThen(onResolved, executor)"))
-    fun <R> flatten(onResolved: Function<T, Later<R>>): Later<R> = andThen(onResolved::invoke)
-
     @JsName("_ignore_errorWithExecutor")
     fun error(handler: (Throwable) -> @UnsafeVariance T, executor: Executor): Later<T> = then(null, handler, executor)
 
