@@ -1,7 +1,16 @@
 package koncurrent.later
 
-import koncurrent.*
-import kotlinx.coroutines.*
+import kase.ExecutorState
+import kase.Failure
+import kase.Result
+import kase.Success
+import koncurrent.Later
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -13,15 +22,15 @@ fun <T> Later<T>.asDeferred(scope: CoroutineScope): Deferred<T> = scope.async(st
 /**
  * Suspends this [Later] and resumes with the result, or exception
  *
- * If this [Later] is already in a [Settled] state,
- * it returns the [Fulfilled.value] immediately or throws the [Rejected.cause]
+ * If this [Later] is already in a [Result] state,
+ * it returns the [Success.data] immediately or throws the [Failure.cause]
  */
-suspend fun <T> Later<T>.await(onUpdate: ((ProgressState) -> Unit)? = null): T = suspendCancellableCoroutine { cont ->
+suspend fun <T> Later<T>.await(onUpdate: ((ExecutorState<T>) -> Unit)? = null): T = suspendCancellableCoroutine { cont ->
     if (onUpdate != null) this.onUpdate(onUpdate)
     finally {
         when (it) {
-            is Fulfilled -> cont.resume(it.value)
-            is Rejected -> cont.resumeWithException(it.cause)
+            is Success -> cont.resume(it.data)
+            is Failure -> cont.resumeWithException(it.cause)
         }
     }
 }
