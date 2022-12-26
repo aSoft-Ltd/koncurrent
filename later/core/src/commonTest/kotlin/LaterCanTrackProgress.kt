@@ -13,10 +13,16 @@ class LaterCanTrackProgress {
 
     fun user(): Later<String> {
         val l = LaterPromise<String>()
+        val (s1, s2) = l.setStages("Stage 1", "Stage 2")
         scope.launch {
-            for (i in 0..10) {
+            for (i in 0..5) {
                 delay(500)
-                l.updateProgress(i * 10L, 100)
+                l.updateProgress(s1(i * 10L, 100))
+            }
+
+            for (i in 5..10) {
+                delay(500)
+                l.updateProgress(s2(i * 10L, 100))
             }
             l.resolveWith("Jane")
         }
@@ -45,8 +51,8 @@ class LaterCanTrackProgress {
     }
 
     @Test
-    fun should_be_able_to_track_progress() = user().progress {
-        println("${it.donePercentage}% complete")
+    fun should_be_able_to_track_progress() = user().onUpdate {
+        println("${it.asExecuting?.progress?.donePercentage}% complete")
     }.then {
         println("expecting")
         expect(it).toBe("Jane")
@@ -54,26 +60,28 @@ class LaterCanTrackProgress {
     }.test()
 
     @Test
-    fun should_be_able_propergate_progress_down_the_line() = user().progress {
-        println("Progress 1: ${it.donePercentage}% complete")
+    fun should_be_able_propergate_progress_down_the_line() = user().onUpdate {
+        println("Progress 1: ${it.asExecuting?.progress?.donePercentage}% complete")
     }.then {
         expect(it).toBe("Jane")
         1
-    }.progress {
-        println("Progress 2: ${it.donePercentage}%")
+    }.onUpdate {
+        println("Progress 2: ${it.asExecuting?.progress?.donePercentage}% complete")
     }.then {
         expect(it).toBe(1)
     }.test()
 
     @Test
-    fun should_be_able_to_track_multi_stage_processes() = stagedUser().onUpdate {
-        println("${it.current.name}: ${it.current.donePercentage}% complete")
-        println("Aggregate: ${it.aggregate}")
+    fun should_be_able_to_track_multi_stage_processes() = stagedUser().onUpdate { state ->
+        val it = state.asExecuting?.progress
+        println("${it?.current?.name}: ${it?.current?.donePercentage}% complete")
+        println("Aggregate: ${it?.donePercentage}")
     }.then {
         expect(it).toBe("Jane")
         1
-    }.onUpdate {
-        println("Progress 2: ${it.current.donePercentage}%")
+    }.onUpdate { state ->
+        val it = state.asExecuting?.progress
+        println("Progress 2: ${it?.current?.donePercentage}%")
     }.then {
         expect(it).toBe(1)
     }.test()

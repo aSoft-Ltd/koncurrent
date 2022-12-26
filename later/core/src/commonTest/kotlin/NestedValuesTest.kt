@@ -3,7 +3,7 @@ import koncurrent.Later
 import koncurrent.MockExecutor
 import koncurrent.later.catch
 import koncurrent.later.finally
-import koncurrent.later.flatten
+import koncurrent.later.andThen
 import koncurrent.later.then
 import kotlin.test.Test
 
@@ -13,7 +13,9 @@ class NestedValuesTest {
     fun should_be_able_to_unwrap_cascaded_values_without_a_callback() {
         val executor = MockExecutor()
         var resolved = false
-        Later.resolve(Later.resolve(2, executor), executor).flatten().then {
+        Later.resolve(Later.resolve(2, executor), executor).andThen {
+            it
+        }.then {
             println("Comparing")
             expect(it).toBe(2)
             println("Finished comparing")
@@ -27,7 +29,7 @@ class NestedValuesTest {
     fun should_be_able_to_unwrap_cascaded_values_with_a_callback() {
         val executor = MockExecutor()
         var resolved = false
-        Later.resolve(1, executor).flatten {
+        Later.resolve(1, executor).andThen {
             println("Flattening")
             Later.resolve(2 + it, executor)
         }.then {

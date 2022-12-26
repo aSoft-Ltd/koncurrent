@@ -1,8 +1,7 @@
 import expect.expect
-import koncurrent.Fulfilled
 import koncurrent.Later
 import koncurrent.MockExecutor
-import koncurrent.later.filterFulfilledValues
+import koncurrent.later.filterSuccessValues
 import koncurrent.later.test
 import kotlin.test.Test
 
@@ -16,7 +15,7 @@ class CanAwaitForMultipleLaters {
         Later.resolve(2),
         Later.resolve(3),
     ).then { list ->
-        list.mapNotNull { (it as? Fulfilled)?.value }
+        list.filterSuccessValues()
     }.then {
         it.sum()
     }.then {
@@ -30,7 +29,7 @@ class CanAwaitForMultipleLaters {
         Later { res, _ -> res(3) },
         Later { res, _ -> res(4) },
     ).then {
-        it.filterFulfilledValues().sum()
+        it.filterSuccessValues().sum()
     }.then {
         expect(it).toBe(1 + 2 + 3 + 4)
     }.test()

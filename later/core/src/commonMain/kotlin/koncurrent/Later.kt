@@ -6,17 +6,20 @@ package koncurrent
 import functions.Callback
 import functions.Consumer
 import functions.Function
-import koncurrent.later.filterFulfilled
-import koncurrent.later.filterFulfilledValues
+import kase.ExecutorState
+import kase.Result
+import kase.Success
+import kollections.List
+import koncurrent.later.filterSuccess
+import koncurrent.later.filterSuccessValues
 import koncurrent.later.internal.PlatformConcurrentMonad
-import kotlinx.collections.interoperable.List
 import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic
 import kotlin.jvm.JvmSynthetic
 
-interface Later<out T> {
+interface Later<out T> : Thenable<T> {
     companion object {
         /**
          * Create a new pending [Later]
@@ -32,106 +35,97 @@ interface Later<out T> {
         fun reject(error: Throwable, executor: Executor = SynchronousExecutor): Later<Nothing> = LaterPromise.reject(error, executor)
 
         @JvmStatic
-        fun <T> allFulfilled(vararg laters: Later<T>): Later<List<Fulfilled<T>>> = all(*laters).then {
-            it.filterFulfilled()
+        fun <T> allFulfilled(vararg laters: Later<T>): Later<List<Success<T>>> = all(*laters).then {
+            it.filterSuccess()
         }
 
         @JvmStatic
         fun <T> allFulfilledValues(vararg laters: Later<T>): Later<List<T>> = allFulfilled(*laters).then { list ->
-            list.filterFulfilledValues()
+            list.filterSuccessValues()
         }
 
         @JvmStatic
-        fun <T> all(vararg laters: Later<T>): Later<List<Settled<T>>> = LaterPromise.all(*laters)
+        fun <T> all(vararg laters: Later<T>): Later<List<Result<T>>> = LaterPromise.all(*laters)
     }
+
+    val state: ExecutorState<T>
 
     /**
      * Schedules a code block to be executed by the provided [executor] after this [Later] resolves
      * This Method is much more friendly when called from kotlin only
      */
     @JvmSynthetic
-    @JsName("_ignore_thenResolveOrRejectWithExecutor")
-    fun <R> then(onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?, executor: Executor): Later<R>
+    override fun <R> then(onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?, executor: Executor): Later<R>
 
     /**
      * Schedules a code block to be executed after this [Later] resolves
      * This Method is much more friendly when called from kotlin only
      */
     @JvmSynthetic
-    @JsName("_ignore_thenResolveOrReject")
-    fun <R> then(onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?): Later<R>
+    override fun <R> then(onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?): Later<R>
 
     /**
      * Schedules a code block to be executed after this [Later] resolves
      * This Method is much more friendly when called from kotlin only
      */
     @JvmSynthetic
-    @JsName("_ignore_thenWithExecutor")
-    fun <R> then(onResolved: (T) -> R, executor: Executor): Later<R> = then(onResolved, null, executor)
+    override fun <R> then(onResolved: (T) -> R, executor: Executor): Later<R> = then(onResolved, null, executor)
 
     /**
      * Schedules a code block to be executed after this [Later] resolves
      * This Method is much more friendly when called from kotlin or javascript
      */
     @JvmSynthetic
-    fun <R> then(onResolved: (T) -> R): Later<R> = then(onResolved, null)
+    override fun <R> then(onResolved: (T) -> R): Later<R> = then(onResolved, null)
 
     /**
      * Schedules a code block to be executed after this [Later] resolves
      * This Method should be called from java
      */
-    @JsName("_ignore_thenFunctionWithExecutor")
-    fun <R> then(onResolved: Function<T, R>, executor: Executor): Later<R> = then(onResolved::invoke, null, executor)
+    override fun <R> then(onResolved: Function<T, R>, executor: Executor): Later<R> = then(onResolved::invoke, null, executor)
 
     /**
      * Schedules a code block to be executed after this [Later] resolves
      * This Method should be called from java
      */
-    @JsName("_ignore_thenFunction")
-    fun <R> then(onResolved: Function<T, R>): Later<R> = then(onResolved::invoke, null)
-
-    @JsName("_ignore_andThenWithExecutor")
-    @JvmSynthetic
-    fun <R> andThen(onResolved: (T) -> Later<R>, executor: Executor): Later<R>
+    override fun <R> then(onResolved: Function<T, R>): Later<R> = then(onResolved::invoke, null)
 
     @JvmSynthetic
-    fun <R> andThen(onResolved: (T) -> Later<R>): Later<R>
+    override fun <R> andThen(onResolved: (T) -> Thenable<R>, executor: Executor): Later<R>
 
-    @JsName("_ignore_andThenFunctionWithExecutor")
-    fun <R> andThen(onResolved: Function<T, Later<R>>, executor: Executor): Later<R> = andThen(onResolved::invoke, executor)
+    @JvmSynthetic
+    override fun <R> andThen(onResolved: (T) -> Thenable<R>): Later<R>
 
-    @JsName("_ignore_andThenFunction")
-    fun <R> andThen(onResolved: Function<T, Later<R>>): Later<R> = andThen(onResolved::invoke)
+    override fun <R> andThen(onResolved: Function<T, Thenable<R>>, executor: Executor): Later<R> = andThen(onResolved::invoke, executor)
 
-    @JsName("_ignore_errorWithExecutor")
-    fun error(handler: (Throwable) -> @UnsafeVariance T, executor: Executor): Later<T> = then(null, handler, executor)
+    override fun <R> andThen(onResolved: Function<T, Thenable<R>>): Later<R> = andThen(onResolved::invoke)
 
-    fun error(handler: (Throwable) -> @UnsafeVariance T): Later<T> = then(null, handler)
+    override fun error(handler: (Throwable) -> @UnsafeVariance T, executor: Executor): Later<T> = then(null, handler, executor)
+
+    override fun error(handler: (Throwable) -> @UnsafeVariance T): Later<T> = then(null, handler)
 
     /**
      * Same as calling catch on javascript or kotlin
      */
-    @JsName("_ignore_errorFunctionWithExecutor")
-    fun error(handler: Function<Throwable, @UnsafeVariance T>, executor: Executor): Later<T> = then(null, handler::invoke, executor)
+    override fun error(handler: Function<Throwable, @UnsafeVariance T>, executor: Executor): Later<T> = then(null, handler::invoke, executor)
 
-    @JsName("_ignore_errorFunction")
-    fun error(handler: Function<Throwable, @UnsafeVariance T>): Later<T> = then(null, handler::invoke)
+    override fun error(handler: Function<Throwable, @UnsafeVariance T>): Later<T> = then(null, handler::invoke)
 
     @JvmSynthetic
     @JsName("_ignore_completeInExecutor")
-    fun complete(cleanUp: (state: Settled<T>) -> Any?, executor: Executor): Later<T>
+    fun complete(cleanUp: (state: Result<T>) -> Any?, executor: Executor): Later<T>
 
     @JvmSynthetic
-    fun complete(cleanUp: (state: Settled<T>) -> Any?): Later<T>
+    fun complete(cleanUp: (state: Result<T>) -> Any?): Later<T>
 
     /**
      * Same as calling finally on javascript or kotlin
      */
     @JsName("_ignore_completeConsumerInExecutor")
-    fun complete(handler: Consumer<in Settled<T>>, executor: Executor): Later<T> = complete(cleanUp = handler::accept, executor)
+    fun complete(handler: Consumer<in Result<T>>, executor: Executor): Later<T> = complete(cleanUp = handler::accept, executor)
 
     @JsName("_ignore_complete")
-    fun complete(handler: Consumer<in Settled<T>>): Later<T> = complete(cleanUp = handler::accept)
+    fun complete(handler: Consumer<in Result<T>>): Later<T> = complete(cleanUp = handler::accept)
 
     @JsName("toPromise")
     fun toCompletable(): PlatformConcurrentMonad<out T>
@@ -139,16 +133,8 @@ interface Later<out T> {
     @JsName("_ignore_toPromise")
     fun toCompletable(executor: Executor): PlatformConcurrentMonad<out T>
 
-    @Deprecated("In favour of onUpdate")
-    @JvmSynthetic
-    fun progress(callback: (Progress) -> Unit): Later<T>
-
-    @Deprecated("In favour of onUpdate")
-    @JsName("_ignore_progress")
-    fun progress(callback: Callback<Progress>): Later<T>
-
-    fun onUpdate(callback: (ProgressState) -> Unit): Later<T>
+    fun onUpdate(callback: (ExecutorState<T>) -> Unit): Later<T>
 
     @JsName("_ignore_onUpdate")
-    fun onUpdate(callback: Callback<ProgressState>): Later<T>
+    fun onUpdate(callback: Callback<ExecutorState<T>>): Later<T>
 }
