@@ -2,7 +2,7 @@
 
 package koncurrent
 
-import kase.ProgressPublisher
+import kase.progress.ProgressPublisher
 
 inline fun <T> Later(
     executor: Executor = Executors.default(),

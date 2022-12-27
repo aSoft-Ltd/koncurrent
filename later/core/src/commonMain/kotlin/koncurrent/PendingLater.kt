@@ -3,7 +3,7 @@
 
 package koncurrent
 
-import kase.ProgressPublisher
+import kase.progress.ProgressPublisher
 import kotlin.js.JsExport
 
 interface PendingLater<T> : Later<T>, ProgressPublisher {

@@ -7,11 +7,11 @@ import kase.Executing
 import kase.ExecutorState
 import kase.Failure
 import kase.Pending
-import kase.ProgressState
+import kase.progress.ProgressState
 import kase.Result
-import kase.Stage
-import kase.StageProgress
-import kase.StageProgressBag
+import kase.progress.Stage
+import kase.progress.StageProgress
+import kase.progress.StageProgressBag
 import kase.Success
 import kollections.List
 import kollections.iListOf
@@ -194,11 +194,11 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
 
     override fun setStages(vararg stageNames: String): List<Stage> = progressBag.setStages(*stageNames)
 
-    override fun updateProgress(progress: StageProgress): ProgressState {
+    override fun updateProgress(p: StageProgress): ProgressState {
         if (state is Result<*>) {
             return ProgressState.unset()
         }
-        val s = Executing(progress = progressBag.updateProgress(progress))
+        val s = Executing(progress = progressBag.updateProgress(p))
         state = s
         notifyState(s)
         return s.progress

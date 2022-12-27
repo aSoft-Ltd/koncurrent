@@ -1,6 +1,6 @@
 package koncurrent
 
-import kase.ProgressPublisher
+import kase.progress.ProgressPublisher
 import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
