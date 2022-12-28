@@ -5,7 +5,7 @@ package koncurrent
 
 import functions.Callback
 import functions.Consumer
-import functions.Function
+import functions.Function1IO
 import kase.ExecutorState
 import kase.Result
 import kase.Success
@@ -82,13 +82,13 @@ interface Later<out T> : Thenable<T> {
      * Schedules a code block to be executed after this [Later] resolves
      * This Method should be called from java
      */
-    override fun <R> then(onResolved: Function<T, R>, executor: Executor): Later<R> = then(onResolved::invoke, null, executor)
+    override fun <R> then(onResolved: Function1IO<T, R>, executor: Executor): Later<R> = then(onResolved::invoke, null, executor)
 
     /**
      * Schedules a code block to be executed after this [Later] resolves
      * This Method should be called from java
      */
-    override fun <R> then(onResolved: Function<T, R>): Later<R> = then(onResolved::invoke, null)
+    override fun <R> then(onResolved: Function1IO<T, R>): Later<R> = then(onResolved::invoke, null)
 
     @JvmSynthetic
     override fun <R> andThen(onResolved: (T) -> Thenable<R>, executor: Executor): Later<R>
@@ -96,9 +96,9 @@ interface Later<out T> : Thenable<T> {
     @JvmSynthetic
     override fun <R> andThen(onResolved: (T) -> Thenable<R>): Later<R>
 
-    override fun <R> andThen(onResolved: Function<T, Thenable<R>>, executor: Executor): Later<R> = andThen(onResolved::invoke, executor)
+    override fun <R> andThen(onResolved: Function1IO<T, Thenable<R>>, executor: Executor): Later<R> = andThen(onResolved::invoke, executor)
 
-    override fun <R> andThen(onResolved: Function<T, Thenable<R>>): Later<R> = andThen(onResolved::invoke)
+    override fun <R> andThen(onResolved: Function1IO<T, Thenable<R>>): Later<R> = andThen(onResolved::invoke)
 
     override fun error(handler: (Throwable) -> @UnsafeVariance T, executor: Executor): Later<T> = then(null, handler, executor)
 
@@ -107,9 +107,9 @@ interface Later<out T> : Thenable<T> {
     /**
      * Same as calling catch on javascript or kotlin
      */
-    override fun error(handler: Function<Throwable, @UnsafeVariance T>, executor: Executor): Later<T> = then(null, handler::invoke, executor)
+    override fun error(handler: Function1IO<Throwable, @UnsafeVariance T>, executor: Executor): Later<T> = then(null, handler::invoke, executor)
 
-    override fun error(handler: Function<Throwable, @UnsafeVariance T>): Later<T> = then(null, handler::invoke)
+    override fun error(handler: Function1IO<Throwable, @UnsafeVariance T>): Later<T> = then(null, handler::invoke)
 
     @JvmSynthetic
     @JsName("_ignore_completeInExecutor")
