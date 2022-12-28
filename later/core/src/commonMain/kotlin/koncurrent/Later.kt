@@ -118,13 +118,10 @@ interface Later<out T> : Thenable<T> {
     @JvmSynthetic
     fun complete(cleanUp: (state: Result<T>) -> Any?): Later<T>
 
-    /**
-     * Same as calling finally on javascript or kotlin
-     */
     @JsName("_ignore_completeConsumerInExecutor")
     fun complete(handler: Consumer<in Result<T>>, executor: Executor): Later<T> = complete(cleanUp = handler::accept, executor)
 
-    @JsName("_ignore_complete")
+    @JsName("_ignore_completeConsumer")
     fun complete(handler: Consumer<in Result<T>>): Later<T> = complete(cleanUp = handler::accept)
 
     @JsName("toPromise")

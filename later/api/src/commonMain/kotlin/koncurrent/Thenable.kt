@@ -3,6 +3,7 @@
 
 package koncurrent
 
+import functions.Consumer
 import functions.Function1IO
 import kotlin.js.JsExport
 import kotlin.js.JsName
