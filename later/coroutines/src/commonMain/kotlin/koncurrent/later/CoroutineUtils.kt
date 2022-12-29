@@ -4,6 +4,7 @@ import kase.ExecutorState
 import kase.Failure
 import kase.Result
 import kase.Success
+import koncurrent.FailedLater
 import koncurrent.Later
 import koncurrent.Thenable
 import kotlinx.coroutines.CoroutineScope
@@ -51,8 +52,8 @@ suspend fun <T> Later<T>.await(onUpdate: ((ExecutorState<T>) -> Unit)? = null): 
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 fun <T> Deferred<T>.asLater(): Later<T> = if (isCompleted) when (val exp = getCompletionExceptionOrNull()) {
-    is Throwable -> Later.reject(exp)
-    else -> Later.resolve(getCompleted())
+    is Throwable -> FailedLater(exp)
+    else -> Later(getCompleted())
 } else Later<T> { resolve, reject ->
     invokeOnCompletion {
         when (val e = getCompletionExceptionOrNull()) {
