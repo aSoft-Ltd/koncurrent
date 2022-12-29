@@ -32,8 +32,16 @@ kotlin {
         }
 
 
-        val nativeMain by creating {
+        val nonJvmMain by creating {
             dependsOn(commonMain)
+        }
+
+        val jsMain by getting {
+            dependsOn(nonJvmMain)
+        }
+
+        val nativeMain by creating {
+            dependsOn(nonJvmMain)
         }
 
         (nativeTargets).forEach {

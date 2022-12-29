@@ -1,19 +1,17 @@
 import expect.expect
 import koncurrent.Later
-import koncurrent.MockExecutor
+import koncurrent.Laters
 import koncurrent.later.filterSuccessValues
 import koncurrent.later.test
 import kotlin.test.Test
 
 class CanAwaitForMultipleLaters {
 
-    val executor = MockExecutor()
-
     @Test
-    fun should_resolve_multiple_laters() = Later.all(
-        Later.resolve(1),
-        Later.resolve(2),
-        Later.resolve(3),
+    fun should_resolve_multiple_laters() = Laters(
+        Later(1),
+        Later(2),
+        Later(3),
     ).then { list ->
         list.filterSuccessValues()
     }.then {
@@ -23,7 +21,7 @@ class CanAwaitForMultipleLaters {
     }.test()
 
     @Test
-    fun should_resolve_just_fulfilled_values() = Later.all<Int>(
+    fun should_resolve_just_fulfilled_values() = Laters<Int>(
         Later { res, _ -> res(1) },
         Later { res, _ -> res(2) },
         Later { res, _ -> res(3) },

@@ -14,10 +14,10 @@ import kotlin.jvm.JvmName
 inline fun <T> List<Result<T>>.filterSuccess(): List<Success<T>> = filterIsInstance<Success<T>>().toIList()
 
 @JvmName("filterSuccessValuesFromResult")
-inline fun <T> List<Result<T>>.filterSuccessValues(): List<T> = filterSuccess().filterSuccessValues()
+inline fun <T> List<Result<T>>.filterSuccessValues(): List<T> = filterSuccess().mapValues()
 
 @JvmName("filterSuccessValuesFromSuccess")
-inline fun <T> List<Success<T>>.filterSuccessValues(): List<T> = map { it.data }.toIList()
+inline fun <T> List<Success<T>>.mapValues(): List<T> = map { it.data }.toIList()
 
 @JvmName("filterRejectedFromResult")
 inline fun <T> List<Result<T>>.filterRejected(): List<Failure<T>> = filterIsInstance<Failure<T>>().toIList()

@@ -1,4 +1,4 @@
-package koncurrent.later.internal
+package koncurrent.internal
 
 import java.util.concurrent.CompletableFuture
 

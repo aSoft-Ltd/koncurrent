@@ -2,37 +2,29 @@
 
 package koncurrent
 
-import functions.Callback
 import kase.Executing
 import kase.ExecutorState
 import kase.Failure
 import kase.Pending
-import kase.progress.ProgressState
 import kase.Result
+import kase.Success
+import kase.progress.ProgressState
 import kase.progress.Stage
 import kase.progress.StageProgress
 import kase.progress.StageProgressBag
-import kase.Success
 import kollections.List
-import kollections.iListOf
-import kollections.toIList
-import koncurrent.later.filterSuccess
-import koncurrent.later.filterSuccessValues
-import koncurrent.later.internal.LaterHandler
-import koncurrent.later.internal.LaterQueueItem
-import koncurrent.later.internal.PlatformConcurrentMonad
-import koncurrent.later.internal.toPlatformConcurrentMonad
-import kotlinx.atomicfu.locks.ReentrantLock
-import kotlinx.atomicfu.locks.reentrantLock
-import kotlinx.atomicfu.locks.withLock
+import koncurrent.internal.AbstractLater
+import koncurrent.internal.LaterHandler
+import koncurrent.internal.LaterQueueItem
+import koncurrent.internal.PlatformConcurrentMonad
+import koncurrent.internal.toPlatformConcurrentMonad
 import kotlinx.collections.atomic.mutableAtomicListOf
 import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmOverloads
-import kotlin.jvm.JvmStatic
 import kotlin.jvm.JvmSynthetic
 
-class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)? = null, val executor: Executor = Executors.default()) : PendingLater<T> {
+class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)? = null, val executor: Executor = Executors.default()) : AbstractLater<T>(), PendingLater<T> {
 
     @JsName("_ignore_fromHandler")
     @JvmOverloads
@@ -55,129 +47,70 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         }
     }
 
-    companion object {
-        fun <T> pending(executor: Executor = SynchronousExecutor) = LaterPromise<T>(executor = executor)
-
-        @JvmStatic
-        @JvmOverloads
-        fun <T> resolve(value: T, executor: Executor = SynchronousExecutor): LaterPromise<T> {
-            val l = LaterPromise<T>(executor = executor)
-            l.resolveWith(value)
-            return l
-        }
-
-        @JvmStatic
-        @JvmOverloads
-        fun reject(error: Throwable, executor: Executor = SynchronousExecutor): LaterPromise<Nothing> {
-            val l = LaterPromise<Nothing>(executor = executor)
-            l.rejectWith(error)
-            return l
-        }
-
-        private val lock: ReentrantLock = reentrantLock()
-
-        @JvmStatic
-        fun <T> allFulfilled(vararg laters: Later<T>): LaterPromise<List<Success<T>>> = all(*laters).then {
-            it.filterSuccess()
-        }
-
-        @JvmStatic
-        fun <T> allFulfilledValues(vararg laters: Later<T>): LaterPromise<List<T>> = allFulfilled(*laters).then { list ->
-            list.filterSuccessValues()
-        }
-
-        @JvmStatic
-        fun <T> all(vararg laters: Later<T>): LaterPromise<List<Result<T>>> {
-            val inputs = laters.map { it as LaterPromise }
-            val later = LaterPromise<List<Result<T>>>(executor = SynchronousExecutor)
-            val states: MutableMap<LaterPromise<T>, Result<T>?> = inputs.associateWith { null }.toMutableMap()
-            inputs.forEach { l ->
-                l.complete({ state ->
-                    lock.withLock {
-                        states[l] = state
-                        if (inputs.map { it.state }.all { it is Result<*> }) {
-                            val stateList = inputs.map { it.state }.filterIsInstance<Result<T>>().toIList()
-                            later.resolveWith(stateList)
-                        }
-                    }
-                }, SynchronousExecutor)
-            }
-            return later
-        }
-    }
-
     /**
      * Schedules a code block to be executed after this [LaterPromise] resolves
      * This Method should be called from Kotlin only
      */
     @JvmSynthetic
-    override fun <R> then(onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?, executor: Executor): LaterPromise<R> {
-        val later = LaterPromise<R>(executor = executor)
-        val item = LaterQueueItem(later = later, resolver = onResolved, rejecter = onRejected)
+    override fun <R> then(onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?, executor: Executor?): LaterPromise<R> {
+        val later = LaterPromise<R>(executor = executor ?: this.executor)
+        val item = LaterQueueItem(later = later, resolver = onResolved, recover = onRejected)
         thenQueue.add(item)
         when (val s = state) {
-            is Success -> propagateFulfilled(s.data)
-            is Failure -> propagateRejected(s.cause)
+            is Success -> propagateSuccess(s.data)
+            is Failure -> propagateFailure(s.cause)
             else -> {}
         }
         return later
     }
 
-    override fun <R> then(onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?) = then(onResolved, onRejected, executor)
-
-    @JvmSynthetic
-    override fun <R> then(onResolved: (T) -> R) = then(onResolved, null)
-
-    override fun <R> andThen(onResolved: (T) -> Thenable<R>, executor: Executor): LaterPromise<R> {
-        val later = LaterPromise<R>(executor = executor)
-        then(executor = executor, onResolved = { res ->
-            executor.execute {
-                try {
-                    val resolved = onResolved(res)
-                    resolved.then(executor = executor, onResolved = {
-                        later.resolveWith(it)
-                    }, onRejected = {
-                        later.rejectWith(it)
-                    })
-                } catch (err: Throwable) {
-                    later.rejectWith(err)
+    override fun <R> andThen(onResolved: (T) -> Thenable<R>, executor: Executor?): LaterPromise<R> {
+        val exec = executor ?: this.executor
+        val later = LaterPromise<R>(executor = executor ?: exec)
+        then(
+            onResolved = { res ->
+                exec.execute {
+                    try {
+                        onResolved(res).then(
+                            onResolved = { later.resolveWith(it) },
+                            onRejected = { later.rejectWith(it) },
+                            executor = exec
+                        )
+                    } catch (err: Throwable) {
+                        later.rejectWith(err)
+                    }
                 }
-            }
-        }, onRejected = {
-            later.rejectWith(it)
-        })
+            },
+            onRejected = { later.rejectWith(it) },
+            executor = exec
+        )
         return later
     }
 
-    override fun <R> andThen(onResolved: (T) -> Thenable<R>) = andThen(onResolved, executor)
-
     @JvmSynthetic
-    override fun complete(cleanUp: (state: Result<T>) -> Any?, executor: Executor) = cleanUp(executor, cleanUp)
-
-    override fun complete(cleanUp: (state: Result<T>) -> Any?) = cleanUp(executor, cleanUp)
-
-
-    internal fun cleanUp(executor: Executor, cleanUp: (state: Result<T>) -> Any?): LaterPromise<out T> {
-        val s = this.state
+    override fun complete(cleaner: (state: Result<T>) -> Any?, executor: Executor?): LaterPromise<out T> {
+        val exec = executor ?: this.executor
+        val s = state
         if (s is Result<*>) {
-            cleanUp(s as Result<T>)
+            cleaner(s as Result<T>)
             return when (s) {
-                is Success -> Later.resolve(s.data, executor) as LaterPromise<T>
-                is Failure -> Later.reject(s.cause, executor) as LaterPromise<T>
+                is Success -> SuccessfulLater(s.data, exec) as LaterPromise<T>
+                is Failure -> FailedLater(s.cause, exec) as LaterPromise<T>
             }
         }
 
-        val later = LaterPromise<T>(executor = executor)
-//        later.progressQueue.addAll(progressQueue.toList())
-        val resolve = { value: T ->
-            cleanUp(Success(value))
-            value
+        val later = LaterPromise<T>(executor = exec)
+        val resolver: (T) -> T = {
+            cleaner(Success(it))
+            later.resolveWith(it)
+            it
         }
-        val rejected = { err: Throwable ->
-            cleanUp(Failure(err, actions = iListOf()))
-            err as T
+        val recover: (Throwable) -> T = { err: Throwable ->
+            cleaner(Failure(err))
+            later.rejectWith(err)
+            throw err
         }
-        finallyQueue.add(LaterQueueItem(later, resolve, rejected))
+        finallyQueue.add(LaterQueueItem(later, resolver, recover))
         return later
     }
 
@@ -189,8 +122,6 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         progressStateQueue.add(callback)
         return this
     }
-
-    override fun onUpdate(callback: Callback<ExecutorState<T>>): Later<T> = onUpdate(callback::invoke)
 
     override fun setStages(vararg stageNames: String): List<Stage> = progressBag.setStages(*stageNames)
 
@@ -204,104 +135,106 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         return s.progress
     }
 
-    private fun notifyState(s: ExecutorState<T>) {
-        progressStateQueue.forEach { callback ->
-            callback(s)
-        }
+    private fun notifyState(s: ExecutorState<T>) = progressStateQueue.forEach { callback ->
+        callback(s)
     }
 
     override fun resolveWith(value: @UnsafeVariance T): Boolean {
-        if (state !is Result<*>) {
-            try {
-                state = Success(value)
-                notifyState(state)
-                propagateFulfilled(value)
-            } catch (err: Throwable) {
-                rejectWith(err)
-            }
-            return true
-        }
-        return false
+        if (state is Result<*>) return false
+
+        state = Success(value)
+        notifyState(state)
+        propagateSuccess(value)
+        return true
     }
 
     override fun rejectWith(error: Throwable): Boolean {
-        if (state !is Result<*>) {
-            state = Failure(error, actions = iListOf())
-            notifyState(state)
-            propagateRejected(error)
-            return true
-        }
-        return false
+        if (state is Result<*>) return false
+
+        state = Failure(error)
+        notifyState(state)
+        propagateFailure(error)
+        return true
     }
 
-    private fun propagateFulfilled(value: T) {
-        thenQueue.forEach {
-            executor.execute {
-                val later = it.later as PendingLater<Any?>
+    private fun <T> LaterQueueItem<T, *>.propagateSuccess(value: T): Boolean {
+        val r = resolver ?: return later.resolveWith(value)
+        executor.execute {
+            try {
+                later.resolveWith(r(value))
+            } catch (err: Throwable) {
+                later.rejectWith(err)
+            }
+        }
+        return true
+    }
+
+    private fun <T> LaterQueueItem<T, *>.propagateFinalSuccess(value: T): Boolean {
+        val r1 = resolver ?: return later.resolveWith(value)
+        executor.execute {
+            try {
+                later.resolveWith(r1(value))
+            } catch (err: Throwable) {
+                val r2 = recover
+                if (r2 == null) {
+                    later.rejectWith(err)
+                    return@execute
+                }
+
                 try {
-                    val resolver = it.resolver
-                    if (resolver != null) {
-                        later.resolveWith(resolver(value))
-                    } else {
-                        later.resolveWith(value)
-                    }
-                } catch (err: Throwable) {
+                    later.resolveWith(r2(err))
+                } catch (error: Throwable) {
+                    err.addSuppressed(error)
                     later.rejectWith(err)
                 }
             }
         }
-        finallyQueue.forEach {
-            executor.execute {
-                val later = it.later as PendingLater<Any?>
-                try {
-                    val resolver = it.resolver
-                    if (resolver != null) later.resolveWith(resolver(value))
-                } catch (err: Throwable) {
-                    try {
-                        val rejecter = it.rejecter
-                        if (rejecter != null) later.resolveWith(rejecter(err))
-                    } catch (error: Throwable) {
-                        err.addSuppressed(error)
-                        later.rejectWith(err)
-                    }
-                }
-            }
-        }
+        return true
+    }
+
+    private fun propagateSuccess(value: T) {
+        thenQueue.forEach { it.propagateSuccess(value) }
         thenQueue.clear()
+        finallyQueue.forEach { it.propagateFinalSuccess(value) }
         finallyQueue.clear()
     }
 
-    private fun propagateRejected(error: Throwable) {
-        thenQueue.forEach {
-            val later = it.later as PendingLater<Any?>
-            executor.execute {
-                try {
-                    val rejecter = it.rejecter
-                    if (rejecter != null) {
-                        later.resolveWith(rejecter(error))
-                    } else {
-                        later.rejectWith(error)
-                    }
-                } catch (err: Throwable) {
-                    error.addSuppressed(err)
-                    later.rejectWith(error)
-                }
+    private fun <T> LaterQueueItem<T, *>.propagateFailure(error: Throwable): Boolean {
+        println("Error: ${error.message}")
+        println("Recover: $recover")
+        val r = recover ?: return later.rejectWith(error)
+        executor.execute {
+            try {
+                println("Recovering: $recover")
+                val res = r(error)
+                later.resolveWith(res)
+                println("Recovered to $res")
+            } catch (err: Throwable) {
+                println("Failed Recovering: ${err.message}")
+                error.addSuppressed(err)
+                later.rejectWith(error)
             }
         }
+        return true
+    }
 
-        finallyQueue.forEach {
-            val later = it.later as PendingLater<Any?>
-            executor.execute {
-                try {
-                    val rejecter = it.rejecter
-                    if (rejecter != null) later.resolveWith(rejecter(error))
-                } catch (err: Throwable) {
-                    error.addSuppressed(err)
-                    later.rejectWith(error)
-                }
+    private fun <T> LaterQueueItem<T, *>.propagateFinalFailure(error: Throwable): Boolean {
+        val r = recover ?: return later.rejectWith(error)
+        executor.execute {
+            try {
+                later.resolveWith(r(error))
+            } catch (err: Throwable) {
+                error.addSuppressed(err)
+                later.rejectWith(error)
             }
         }
+        return true
+    }
+
+    private fun propagateFailure(error: Throwable) {
+        thenQueue.forEach { it.propagateFailure(error) }
         thenQueue.clear()
+        finallyQueue.forEach { it.propagateFinalFailure(error) }
         finallyQueue.clear()
     }
 

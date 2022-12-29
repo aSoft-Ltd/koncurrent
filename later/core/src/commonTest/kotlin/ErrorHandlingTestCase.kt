@@ -1,8 +1,7 @@
 import expect.expect
 import koncurrent.Later
 import koncurrent.MockExecutor
-import koncurrent.later.catch
-import koncurrent.later.then
+import koncurrent.SynchronousExecutor
 import kotlin.test.Test
 
 class ErrorHandlingTestCase {
@@ -20,19 +19,15 @@ class ErrorHandlingTestCase {
             res(25)
         }.then {
             blockcount++
-            println("danger here")
             1 divide zero // so that it fails
         }.then {
             blockcount++
-            println("danger cont...")
             it * 2
         }.catch {
             blockcount++
-            println("Recovering")
             zero
         }.then {
             blockcount++
-            println("Recovered")
             it + 1
             result = it + 1
         }
@@ -44,7 +39,7 @@ class ErrorHandlingTestCase {
     fun should_execute_catch_when_it_encounters_an_error() {
         var blockcount = 0
         var result = 0
-        Later.resolve(0, executor).then {
+        Later(0, executor).then {
             blockcount++
             it divide it
         }.catch {
@@ -62,7 +57,7 @@ class ErrorHandlingTestCase {
     fun should_not_execute_catch_if_there_are_no_errors() {
         var blockcount = 0
         var result = 0
-        Later.resolve(4, executor).then {
+        Later(4, executor).then {
             blockcount++
             it + 7
         }.catch {
@@ -80,21 +75,29 @@ class ErrorHandlingTestCase {
     fun can_totally_chain_errors_and_then_blocks_continuously() {
         var blockcount = 0
         var result = 0
-        Later.resolve(4, executor).then {
-            blockcount++
-            it + 7
+        Later(4, SynchronousExecutor).then {
+            blockcount++       // 1
+            val ret = it + 7
+            println("ret(then): $ret")
+            ret // 11
         }.then {
             blockcount++
-            it - 11
+            val ret = it - 11       // 2
+            println("ret(then): $ret")
+            ret               // 0
         }.then {
-            blockcount++
-            it divide it
+            blockcount++       // 3
+            val ret = it divide it
+            println("ret(then): $ret")
+            ret             // error
         }.catch {
-            blockcount++
+            blockcount++       // 4
+            println("ret(catch): 5")
             5
         }.then {
-            blockcount++
-            result = it
+            blockcount++       // 5
+            result = it        //
+            println("res(then): $result")
         }
         expect(blockcount).toBe(5, "Chained code blocks where not executed as expected")
         expect(result).toBe(5)
@@ -104,7 +107,7 @@ class ErrorHandlingTestCase {
     fun can_totally_chain_many_errors_and_then_blocks_continuously() {
         var blockcount = 0
         var result = 0
-        Later.resolve(4, executor).then {
+        Later(4, executor).then {
             blockcount++
             it + 7
         }.then {

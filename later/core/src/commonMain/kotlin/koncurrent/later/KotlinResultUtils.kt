@@ -1,14 +1,16 @@
 package koncurrent.later
 
+import koncurrent.FailedLater
 import koncurrent.Later
+import koncurrent.SuccessfulLater
 import koncurrent.Thenable
 
-fun <D> Result<D>.toLater(): Later<D>{
+fun <D> Result<D>.toLater(): Later<D> {
     val exp = exceptionOrNull()
-    return if(exp!=null) {
-        Later.reject(exp)
+    return if (exp != null) {
+        FailedLater(exp)
     } else {
-        Later.resolve(getOrThrow())
+        SuccessfulLater(getOrThrow())
     }
 }
 

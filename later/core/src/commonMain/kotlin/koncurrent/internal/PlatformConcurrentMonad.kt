@@ -1,3 +1,3 @@
-package koncurrent.later.internal
+package koncurrent.internal
 
 expect class PlatformConcurrentMonad<T>

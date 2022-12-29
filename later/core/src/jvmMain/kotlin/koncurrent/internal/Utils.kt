@@ -1,13 +1,10 @@
 @file:JvmName("UtilsJvm")
 
-package koncurrent.later.internal
+package koncurrent.internal
 
 import koncurrent.Executor
-import koncurrent.Later
 import koncurrent.LaterPromise
-import koncurrent.later.internal.PlatformConcurrentMonad
 import java.util.concurrent.CompletableFuture
-import java.util.function.BiConsumer
 
 internal actual fun <T> LaterPromise<T>.toPlatformConcurrentMonad(executor: Executor): PlatformConcurrentMonad<out T> {
     val future = CompletableFuture<T>()

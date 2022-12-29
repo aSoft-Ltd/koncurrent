@@ -13,7 +13,7 @@ class NestedValuesTest {
     fun should_be_able_to_unwrap_cascaded_values_without_a_callback() {
         val executor = MockExecutor()
         var resolved = false
-        Later.resolve(Later.resolve(2, executor), executor).andThen {
+        Later(Later(2, executor), executor).andThen {
             it
         }.then {
             println("Comparing")
@@ -29,9 +29,9 @@ class NestedValuesTest {
     fun should_be_able_to_unwrap_cascaded_values_with_a_callback() {
         val executor = MockExecutor()
         var resolved = false
-        Later.resolve(1, executor).andThen {
+        Later(1, executor).andThen {
             println("Flattening")
-            Later.resolve(2 + it, executor)
+            Later(2 + it, executor)
         }.then {
             println("Comparing $it")
             expect(it).toBe(3)
@@ -51,7 +51,7 @@ class NestedValuesTest {
         val e3 = MockExecutor("Mock Executor 3")
         var recovered = false
         var result = -1
-        Later.resolve(0, e1).then(e2) {
+        Later(0, e1).then(e2) {
             expect(it).toBe(0)
             it + 1
         }.then(e3) {
@@ -73,7 +73,7 @@ class NestedValuesTest {
 
     @Test
     fun should_keep_execution_on_first_executor() {
-        Later.resolve(0, MockExecutor("Mock Executor 1")).then {
+        Later(0, MockExecutor("Mock Executor 1")).then {
             expect(it).toBe(0)
             it + 1
         }.then {

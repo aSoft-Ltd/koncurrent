@@ -17,10 +17,6 @@ inline fun <T> Later<T>.catch(
     noinline handler: (Throwable) -> T
 ): Later<T> = then(null, handler, executor)
 
-inline fun <T> Later<T>.catch(
-    noinline handler: (Throwable) -> T
-): Later<T> = then(null, handler)
-
 fun <T> Later<T>.finally(
     executor: Executor,
     cleanUp: (state: Result<T>) -> Unit

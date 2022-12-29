@@ -6,7 +6,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.test.Test
+import kotlin.test.Ignore
 
+@Ignore
 class LaterCanTrackProgress {
 
     private val scope = CoroutineScope(Dispatchers.Default)
@@ -36,17 +38,16 @@ class LaterCanTrackProgress {
             val (reading, writing) = l.setStages("Reading", "Writing")
 
             for (i in 0..10) {
-                delay(500)
+                delay(100)
                 l.updateProgress(reading(i * 10L, 100))
             }
 
             for (i in 0..10) {
-                delay(500)
+                delay(100)
                 l.updateProgress(writing(i * 10L, 100))
             }
             l.resolveWith("Jane")
         }
-
         return l
     }
 

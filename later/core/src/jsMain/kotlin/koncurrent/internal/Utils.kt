@@ -1,7 +1,6 @@
-package koncurrent.later.internal
+package koncurrent.internal
 
 import koncurrent.Executor
-import koncurrent.Later
 import koncurrent.LaterPromise
 import koncurrent.Promise
 import koncurrent.later.toPromise

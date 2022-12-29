@@ -1,6 +1,6 @@
 @file:JvmName("UtilsCommon")
 
-package koncurrent.later.internal
+package koncurrent.internal
 
 import koncurrent.Executor
 import koncurrent.Later

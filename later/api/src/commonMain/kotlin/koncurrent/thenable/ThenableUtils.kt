@@ -8,19 +8,15 @@ import kotlin.jvm.JvmName
 
 inline fun <T, R> Thenable<T>.then(
     executor: Executor,
-    noinline onSuccess: (T) -> R
-): Thenable<R> = then(onSuccess, null, executor)
+    noinline resolver: (T) -> R
+): Thenable<R> = then(resolver, null, executor)
 
 inline fun <T> Thenable<T>.catch(
     executor: Executor,
     noinline handler: (Throwable) -> T
 ): Thenable<T> = then(null, handler, executor)
 
-inline fun <T> Thenable<T>.catch(
-    noinline handler: (Throwable) -> T
-): Thenable<T> = then(null, handler)
-
 fun <T, R> Thenable<T>.andThen(
     executor: Executor,
-    onResolved: (T) -> Thenable<R>
-) = andThen(onResolved, executor)
+    resolver: (T) -> Thenable<R>
+) : Thenable<R> = andThen(resolver, executor)
