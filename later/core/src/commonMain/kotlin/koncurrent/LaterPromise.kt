@@ -114,9 +114,9 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         return later
     }
 
-    override fun toCompletable(): PlatformConcurrentMonad<out T> = toPlatformConcurrentMonad(executor)
+    override fun toCompletable(): PlatformConcurrentMonad<T> = toPlatformConcurrentMonad(executor)
 
-    override fun toCompletable(executor: Executor): PlatformConcurrentMonad<out T> = toPlatformConcurrentMonad(executor)
+    override fun toCompletable(executor: Executor): PlatformConcurrentMonad<T> = toPlatformConcurrentMonad(executor)
 
     override fun onUpdate(callback: (ExecutorState<T>) -> Unit): Later<T> {
         progressStateQueue.add(callback)

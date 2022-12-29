@@ -6,7 +6,7 @@ import koncurrent.Executor
 import koncurrent.LaterPromise
 import java.util.concurrent.CompletableFuture
 
-internal actual fun <T> LaterPromise<T>.toPlatformConcurrentMonad(executor: Executor): PlatformConcurrentMonad<out T> {
+internal actual fun <T> LaterPromise<T>.toPlatformConcurrentMonad(executor: Executor): PlatformConcurrentMonad<T> {
     val future = CompletableFuture<T>()
     then(
         executor = executor,

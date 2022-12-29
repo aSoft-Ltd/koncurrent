@@ -74,9 +74,9 @@ actual interface Later<out T> : Thenable<T> {
 
     fun complete(completer: Callback<Result<T>>): Later<T>
 
-    actual fun toCompletable(): PlatformConcurrentMonad<out T>
+    actual fun toCompletable(): PlatformConcurrentMonad<@UnsafeVariance T>
 
-    actual fun toCompletable(executor: Executor): PlatformConcurrentMonad<out T>
+    actual fun toCompletable(executor: Executor): PlatformConcurrentMonad<@UnsafeVariance T>
 
     actual fun onUpdate(callback: (ExecutorState<T>) -> Unit): Later<T>
 

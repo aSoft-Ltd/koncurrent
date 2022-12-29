@@ -3,7 +3,7 @@ package koncurrent.later
 import koncurrent.Later
 import koncurrent.Promise
 
-fun <T> Later<T>.toPromise(): Promise<out T> = asDynamic().promise ?: Promise<T> { resolve, reject ->
+fun <T> Later<T>.toPromise(): Promise<T> = asDynamic().promise ?: Promise<T> { resolve, reject ->
     then(onResolved = { resolve(it) }, onRejected = { reject(it) })
 }.apply { asDynamic().promise = this }
 

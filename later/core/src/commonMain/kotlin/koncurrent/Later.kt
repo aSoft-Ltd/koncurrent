@@ -45,9 +45,9 @@ expect interface Later<out T> : Thenable<T> {
 
     fun complete(cleaner: (state: Result<T>) -> Any?): Later<T>
 
-    fun toCompletable(): PlatformConcurrentMonad<out T>
+    fun toCompletable(): PlatformConcurrentMonad<@UnsafeVariance T>
 
-    fun toCompletable(executor: Executor): PlatformConcurrentMonad<out T>
+    fun toCompletable(executor: Executor): PlatformConcurrentMonad<@UnsafeVariance T>
 
     fun onUpdate(callback: (ExecutorState<T>) -> Unit): Later<T>
 }

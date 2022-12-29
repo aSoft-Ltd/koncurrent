@@ -13,12 +13,10 @@ public class LaterJavaApiTest {
     }
 
     CompletableFuture<Integer> getFuture() {
-        getLater().then(i -> {
+        return getLater().then(i -> {
             System.out.println(i);
             return i + 1;
-        }).toCompletable();
-
-        return CompletableFuture.completedFuture(2);
+        }).andThen(it -> getLater()).toCompletable();
     }
 
     @Test

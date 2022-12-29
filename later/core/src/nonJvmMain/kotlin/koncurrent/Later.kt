@@ -60,10 +60,10 @@ actual interface Later<out T> : Thenable<T> {
     actual fun complete(cleaner: (state: Result<T>) -> Any?): Later<T>
 
     @JsName("toPromise")
-    actual fun toCompletable(): PlatformConcurrentMonad<out T>
+    actual fun toCompletable(): PlatformConcurrentMonad<@UnsafeVariance T>
 
     @JsName("_ignore_toPromise")
-    actual fun toCompletable(executor: Executor): PlatformConcurrentMonad<out T>
+    actual fun toCompletable(executor: Executor): PlatformConcurrentMonad<@UnsafeVariance T>
 
     actual fun onUpdate(callback: (ExecutorState<T>) -> Unit): Later<T>
 }
