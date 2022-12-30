@@ -5,12 +5,18 @@ package koncurrent.later
 import kase.Result
 import koncurrent.Executor
 import koncurrent.Later
+import koncurrent.Thenable
 import kotlin.jvm.JvmName
 
 inline fun <T, R> Later<T>.then(
     executor: Executor,
     noinline onResolved: (T) -> R
 ) = then(onResolved, executor)
+
+inline fun <T, R> Later<T>.andThen(
+    executor: Executor,
+    noinline onResolved: (T) -> Thenable<R>
+) = andThen(onResolved, executor)
 
 inline fun <T> Later<T>.catch(
     executor: Executor,
