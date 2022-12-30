@@ -15,3 +15,7 @@ internal actual fun <T> LaterPromise<T>.toPlatformConcurrentMonad(executor: Exec
     )
     return future
 }
+
+internal actual fun <T, R> ((T) -> R).asExecutor(): Executor = error("")
+
+internal actual fun <T, R> Executor.asResolver(): (T) -> R = error("")

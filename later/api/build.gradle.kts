@@ -5,6 +5,8 @@ plugins {
     signing
 }
 
+val tmp = 3
+
 kotlin {
     jvm { library();withJava() }
     js(IR) { library() }
@@ -18,26 +20,10 @@ kotlin {
                 api(projects.koncurrentPrimitivesCore)
             }
         }
-
-        val nonJvmMain by creating {
-            dependsOn(commonMain)
-        }
-
-        val jsMain by getting {
-            dependsOn(nonJvmMain)
-        }
-
-        nativeTargets.forEach {
-            (nativeTargets).forEach {
-                val main by it.compilations.getting {}
-                main.defaultSourceSet {
-                    dependsOn(nonJvmMain)
-                }
-            }
-        }
     }
 }
 
 aSoftOSSLibrary(
-    version = asoft.versions.root.get(), description = "An multiplatform implementation of a Thenable based api"
+    version = asoft.versions.root.get(),
+    description = "An multiplatform implementation of a Thenable based api"
 )

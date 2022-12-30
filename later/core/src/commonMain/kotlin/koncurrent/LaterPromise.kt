@@ -1,5 +1,3 @@
-@file:JsExport @file:Suppress("NON_EXPORTABLE_TYPE")
-
 package koncurrent
 
 import kase.Executing
@@ -17,9 +15,10 @@ import koncurrent.internal.AbstractLater
 import koncurrent.internal.LaterHandler
 import koncurrent.internal.LaterQueueItem
 import koncurrent.internal.PlatformConcurrentMonad
+import koncurrent.internal.asExecutor
+import koncurrent.internal.asResolver
 import koncurrent.internal.toPlatformConcurrentMonad
 import kotlinx.collections.atomic.mutableAtomicListOf
-import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmSynthetic
@@ -47,12 +46,8 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         }
     }
 
-    /**
-     * Schedules a code block to be executed after this [LaterPromise] resolves
-     * This Method should be called from Kotlin only
-     */
     @JvmSynthetic
-    override fun <R> then(onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?, executor: Executor?): LaterPromise<R> {
+    override fun <R> thenRaw(executor: Executor?, onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?): LaterPromise<R> {
         val later = LaterPromise<R>(executor = executor ?: this.executor)
         val item = LaterQueueItem(later = later, resolver = onResolved, recover = onRejected)
         thenQueue.add(item)
@@ -64,31 +59,25 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         return later
     }
 
-    override fun <R> andThen(onResolved: (T) -> Thenable<R>, executor: Executor?): LaterPromise<R> {
+    override fun <R> andThenRaw(executor: Executor?, onResolved: (T) -> Thenable<R>): LaterPromise<R> {
         val exec = executor ?: this.executor
         val later = LaterPromise<R>(executor = executor ?: exec)
-        then(
-            onResolved = { res ->
-                exec.execute {
-                    try {
-                        onResolved(res).then(
-                            onResolved = { later.resolveWith(it) },
-                            onRejected = { later.rejectWith(it) },
-                            executor = exec
-                        )
-                    } catch (err: Throwable) {
-                        later.rejectWith(err)
-                    }
+        then(onResolved = { res ->
+            exec.execute {
+                try {
+                    onResolved(res).then(onResolved = { later.resolveWith(it) }, onRejected = { later.rejectWith(it) }, executor = exec
+                    )
+                } catch (err: Throwable) {
+                    later.rejectWith(err)
                 }
-            },
-            onRejected = { later.rejectWith(it) },
-            executor = exec
+            }
+        }, onRejected = { later.rejectWith(it) }, executor = exec
         )
         return later
     }
 
     @JvmSynthetic
-    override fun complete(cleaner: (state: Result<T>) -> Any?, executor: Executor?): LaterPromise<out T> {
+    override fun completeRaw(executor: Executor?, cleaner: (state: Result<T>) -> Any?): LaterPromise<out T> {
         val exec = executor ?: this.executor
         val s = state
         if (s is Result<*>) {
@@ -126,9 +115,8 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     override fun setStages(vararg stageNames: String): List<Stage> = progressBag.setStages(*stageNames)
 
     override fun updateProgress(p: StageProgress): ProgressState {
-        if (state is Result<*>) {
-            return ProgressState.unset()
-        }
+        if (state is Result<*>) return ProgressState.unset()
+
         val s = Executing(progress = progressBag.updateProgress(p))
         state = s
         notifyState(s)
@@ -200,17 +188,12 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     }
 
     private fun <T> LaterQueueItem<T, *>.propagateFailure(error: Throwable): Boolean {
-        println("Error: ${error.message}")
-        println("Recover: $recover")
         val r = recover ?: return later.rejectWith(error)
         executor.execute {
             try {
-                println("Recovering: $recover")
                 val res = r(error)
                 later.resolveWith(res)
-                println("Recovered to $res")
             } catch (err: Throwable) {
-                println("Failed Recovering: ${err.message}")
                 error.addSuppressed(err)
                 later.rejectWith(error)
             }

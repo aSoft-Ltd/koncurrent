@@ -9,10 +9,10 @@ internal class LaterQueueItem<in T, out R>(
     val recover: ((Throwable) -> R)?
 ) {
     companion object {
-        operator fun <T, R> invoke(
+        inline operator fun <T, R> invoke(
             later: LaterPromise<R>,
-            resolver: ((T) -> R)?,
-            recover: ((Throwable) -> R)?
+            noinline resolver: ((T) -> R)?,
+            noinline recover: ((Throwable) -> R)?
         ): LaterQueueItem<T, R> = LaterQueueItem(later as LaterPromise<Any?>, resolver, recover)
     }
 }

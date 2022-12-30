@@ -3,7 +3,6 @@ import koncurrent.Later
 import koncurrent.MockExecutor
 import koncurrent.later.catch
 import koncurrent.later.finally
-import koncurrent.later.andThen
 import koncurrent.later.then
 import kotlin.test.Test
 
@@ -52,9 +51,11 @@ class NestedValuesTest {
         var recovered = false
         var result = -1
         Later(0, e1).then(e2) {
+            println("In executor 2")
             expect(it).toBe(0)
             it + 1
         }.then(e3) {
+            println("In executor 3")
             expect(it).toBe(1)
             it * 2
         }.then(e1) {
@@ -67,8 +68,8 @@ class NestedValuesTest {
             result = 1
             println("Finished processing later")
         }
-        expect(recovered).toBe(true, "Expected Later to be recovered at this point but it wasn't")
         expect(result).toBe(1, "Finally block didn't execute")
+        expect(recovered).toBe(true, "Expected Later to be recovered at this point but it wasn't")
     }
 
     @Test

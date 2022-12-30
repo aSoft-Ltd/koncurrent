@@ -1,4 +1,4 @@
-@file:Suppress("FunctionName")
+@file:Suppress("FunctionName", "NON_EXPORTABLE_TYPE")
 
 package koncurrent
 
@@ -9,16 +9,21 @@ import kotlin.jvm.JvmOverloads
 import kollections.List
 import kollections.toIList
 import koncurrent.later.filterSuccess
+import koncurrent.later.finally
 import koncurrent.later.mapValues
 import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 inline fun <T> Later(
     executor: Executor = Executors.default(),
     noinline handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)
 ): Later<T> = LaterPromise(handler, executor)
 
+@JsExport
+@JsName("pendingLater")
 inline fun <T> PendingLater(executor: Executor = SynchronousExecutor): PendingLater<T> = LaterPromise(executor = executor)
 
 inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Later<T> {
@@ -33,19 +38,13 @@ inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Late
     return l
 }
 
-@JvmOverloads
-inline fun <T> laterOf(
-    value: T,
-    executor: Executor = SynchronousExecutor
-): Later<T> = SuccessfulLater(value, executor)
-
-@JvmOverloads
+@JsExport
+@JsName("laterOf")
 inline fun <T> Later(
     value: T,
     executor: Executor = SynchronousExecutor
 ): Later<T> = SuccessfulLater(value, executor)
 
-@JvmOverloads
 fun <T> SuccessfulLater(
     value: T,
     executor: Executor = SynchronousExecutor
@@ -53,6 +52,7 @@ fun <T> SuccessfulLater(
     resolveWith(value)
 }
 
+@JsExport
 @JvmOverloads
 fun FailedLater(
     error: Throwable,
@@ -74,7 +74,7 @@ fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
     val later = LaterPromise<List<Result<T>>>(executor = SynchronousExecutor)
     var resolved = false
     inputs.forEach { l ->
-        l.complete({
+        l.finally(SynchronousExecutor) {
             if (!resolved) lock.withLock {
                 val states = inputs.map { it.state }
                 if (states.all { it is Result<*> }) {
@@ -83,7 +83,7 @@ fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
                     later.resolveWith(stateList)
                 }
             }
-        }, SynchronousExecutor)
+        }
     }
     return later
 }
