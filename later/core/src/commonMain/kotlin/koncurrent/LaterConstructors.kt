@@ -77,7 +77,7 @@ fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
         l.finally(SynchronousExecutor) {
             if (!resolved) lock.withLock {
                 val states = inputs.map { it.state }
-                if (states.all { it is Result<*> }) {
+                if (states.all { it is Result<Any?> }) {
                     resolved = true
                     val stateList = states.filterIsInstance<Result<T>>().toIList()
                     later.resolveWith(stateList)

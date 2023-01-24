@@ -19,7 +19,7 @@ kotlin {
                 api(projects.kollectionsInteroperable)
                 api(projects.koncurrentLaterApi)
                 api(projects.kaseCore)
-                api(asoft.kotlinx.collections.atomic)
+                api(projects.kollectionsAtomic)
             }
         }
 

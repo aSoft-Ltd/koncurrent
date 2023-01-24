@@ -15,10 +15,8 @@ import koncurrent.internal.AbstractLater
 import koncurrent.internal.LaterHandler
 import koncurrent.internal.LaterQueueItem
 import koncurrent.internal.PlatformConcurrentMonad
-import koncurrent.internal.asExecutor
-import koncurrent.internal.asResolver
 import koncurrent.internal.toPlatformConcurrentMonad
-import kotlinx.collections.atomic.mutableAtomicListOf
+import kollections.mutableAtomicListOf
 import kotlin.js.JsName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmSynthetic
@@ -29,8 +27,8 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     @JvmOverloads
     constructor(handler: LaterHandler<T>, executor: Executor = Executors.default()) : this({ resolve, reject -> handler.execute(resolve, reject) }, executor)
 
-    private val thenQueue = mutableAtomicListOf<LaterQueueItem<T, *>>()
-    private val finallyQueue = mutableAtomicListOf<LaterQueueItem<T, *>>()
+    private val thenQueue = mutableAtomicListOf<LaterQueueItem<T, Any?>>()
+    private val finallyQueue = mutableAtomicListOf<LaterQueueItem<T, Any?>>()
     private val progressStateQueue = mutableAtomicListOf<(ExecutorState<T>) -> Unit>()
 
     private val progressBag = StageProgressBag()
@@ -80,7 +78,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     override fun completeRaw(executor: Executor?, cleaner: (state: Result<T>) -> Any?): LaterPromise<out T> {
         val exec = executor ?: this.executor
         val s = state
-        if (s is Result<*>) {
+        if (s is Result<Any?>) {
             cleaner(s as Result<T>)
             return when (s) {
                 is Success -> SuccessfulLater(s.data, exec) as LaterPromise<T>
@@ -115,7 +113,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     override fun setStages(vararg stageNames: String): List<Stage> = progressBag.setStages(*stageNames)
 
     override fun updateProgress(p: StageProgress): ProgressState {
-        if (state is Result<*>) return ProgressState.unset()
+        if (state is Result<Any?>) return ProgressState.unset()
 
         val s = Executing(progress = progressBag.updateProgress(p))
         state = s
@@ -128,7 +126,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     }
 
     override fun resolveWith(value: @UnsafeVariance T): Boolean {
-        if (state is Result<*>) return false
+        if (state is Result<Any?>) return false
 
         state = Success(value)
         notifyState(state)
@@ -137,7 +135,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     }
 
     override fun rejectWith(error: Throwable): Boolean {
-        if (state is Result<*>) return false
+        if (state is Result<Any?>) return false
 
         state = Failure(error)
         notifyState(state)
@@ -145,7 +143,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         return true
     }
 
-    private fun <T> LaterQueueItem<T, *>.propagateSuccess(value: T): Boolean {
+    private fun <T> LaterQueueItem<T, Any?>.propagateSuccess(value: T): Boolean {
         val r = resolver ?: return later.resolveWith(value)
         executor.execute {
             try {
@@ -157,7 +155,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         return true
     }
 
-    private fun <T> LaterQueueItem<T, *>.propagateFinalSuccess(value: T): Boolean {
+    private fun <T> LaterQueueItem<T, Any?>.propagateFinalSuccess(value: T): Boolean {
         val r1 = resolver ?: return later.resolveWith(value)
         executor.execute {
             try {
@@ -187,7 +185,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         finallyQueue.clear()
     }
 
-    private fun <T> LaterQueueItem<T, *>.propagateFailure(error: Throwable): Boolean {
+    private fun <T> LaterQueueItem<T, Any?>.propagateFailure(error: Throwable): Boolean {
         val r = recover ?: return later.rejectWith(error)
         executor.execute {
             try {
@@ -201,7 +199,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         return true
     }
 
-    private fun <T> LaterQueueItem<T, *>.propagateFinalFailure(error: Throwable): Boolean {
+    private fun <T> LaterQueueItem<T, Any?>.propagateFinalFailure(error: Throwable): Boolean {
         val r = recover ?: return later.rejectWith(error)
         executor.execute {
             try {
