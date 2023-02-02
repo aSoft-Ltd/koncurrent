@@ -4,7 +4,6 @@ import kase.Result
 import koncurrent.Executor
 import koncurrent.Later
 import koncurrent.PendingLater
-import koncurrent.Thenable
 
 abstract class AbstractLater<T> : PendingLater<T> {
 
@@ -30,15 +29,15 @@ abstract class AbstractLater<T> : PendingLater<T> {
         onResolved: (T) -> R
     ) = thenRaw(executor = null, onResolved = onResolved, null)
 
-    abstract fun <R> andThenRaw(executor: Executor?, onResolved: (T) -> Thenable<R>): PendingLater<R>
+    abstract fun <R> andThenRaw(executor: Executor?, onResolved: (T) -> Later<R>): PendingLater<R>
 
     override fun <R> andThen(
-        onResolved: (T) -> Thenable<R>,
+        onResolved: (T) -> Later<R>,
         executor: Executor,
     ) = andThenRaw(executor = executor, onResolved = onResolved)
 
     override fun <R> andThen(
-        onResolved: (T) -> Thenable<R>
+        onResolved: (T) -> Later<R>
     ) = andThenRaw(executor = null, onResolved)
 
     override fun catch(

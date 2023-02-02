@@ -6,7 +6,6 @@ import kase.Result
 import kase.Success
 import koncurrent.FailedLater
 import koncurrent.Later
-import koncurrent.Thenable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
@@ -19,17 +18,7 @@ import kotlin.coroutines.resumeWithException
 /**
  * Converts and instance of this [Later] into a [Deferred]
  */
-fun <T> Thenable<T>.asDeferred(scope: CoroutineScope): Deferred<T> = scope.async(start = CoroutineStart.LAZY) { await() }
-
-/**
- * Suspends this [Thenable] and resumes with the result, or exception
- *
- * If this [Thenable] is already in a [Result] state,
- * it returns the [Success.data] immediately or throws the [Failure.cause]
- */
-suspend fun <T> Thenable<T>.await(onUpdate: ((ExecutorState<T>) -> Unit)? = null): T = if (this is Later) {
-    await(onUpdate)
-} else throw RuntimeException("Thenable is not a Later")
+fun <T> Later<T>.asDeferred(scope: CoroutineScope): Deferred<T> = scope.async(start = CoroutineStart.LAZY) { await() }
 
 /**
  * Suspends this [Later] and resumes with the result, or exception
@@ -62,9 +51,3 @@ fun <T> Deferred<T>.asLater(): Later<T> = if (isCompleted) when (val exp = getCo
         }
     }
 }
-
-/**
- * Convert's this [Deferred] into a [Later]
- */
-@OptIn(ExperimentalCoroutinesApi::class)
-fun <T> Deferred<T>.asThenable(): Thenable<T> = asLater()

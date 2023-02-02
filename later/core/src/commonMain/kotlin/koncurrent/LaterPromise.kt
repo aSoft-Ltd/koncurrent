@@ -57,7 +57,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         return later
     }
 
-    override fun <R> andThenRaw(executor: Executor?, onResolved: (T) -> Thenable<R>): LaterPromise<R> {
+    override fun <R> andThenRaw(executor: Executor?, onResolved: (T) -> Later<R>): LaterPromise<R> {
         val exec = executor ?: this.executor
         val later = LaterPromise<R>(executor = executor ?: exec)
         then(onResolved = { res ->
@@ -125,7 +125,7 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         callback(s)
     }
 
-    override fun resolveWith(value: @UnsafeVariance T): Boolean {
+    override fun resolveWith(value: T): Boolean {
         if (state is Result<Any?>) return false
 
         state = Success(value)
