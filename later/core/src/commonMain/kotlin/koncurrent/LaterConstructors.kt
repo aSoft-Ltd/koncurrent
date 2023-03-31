@@ -24,7 +24,8 @@ inline fun <T> Later(
 
 @JsExport
 @JsName("pendingLater")
-inline fun <T> PendingLater(executor: Executor = SynchronousExecutor): PendingLater<T> = LaterPromise(executor = executor)
+inline fun <T> PendingLater(executor: Executor = SynchronousExecutor): PendingLater<T> =
+    LaterPromise(executor = executor)
 
 inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Later<T> {
     val l = PendingLater<T>(executor = this)
@@ -59,6 +60,15 @@ fun FailedLater(
     executor: Executor = SynchronousExecutor
 ): Later<Nothing> = PendingLater<Nothing>(executor).apply {
     rejectWith(error)
+}
+
+@JsExport
+@JvmOverloads
+fun TODOLater(
+    message: String = "Not implemented",
+    executor: Executor = SynchronousExecutor
+): Later<Nothing> = PendingLater<Nothing>(executor).apply {
+    rejectWith(NotImplementedError(message))
 }
 
 fun <T> SuccessfulLaters(vararg laters: Later<T>): Later<List<Success<T>>> = Laters(*laters).then { it.filterSuccess() }
