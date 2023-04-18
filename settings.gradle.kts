@@ -32,12 +32,15 @@ fun includeSubs(base: String, path: String = base, vararg subs: String) {
 
 val tmp = 1
 
-rootProject.name = "asoft"
+rootProject.name = "Koncurrent"
+
+includeBuild("../able")
 
 // dependencies
 includeSubs("functions", "../functions", "core")
-includeSubs("expect", "../expect", "core", "coroutines")
+includeSubs("kommander", "../kommander", "core", "coroutines")
 
 // submodules
-includeSubs("koncurrent-primitives", "primitives", "core", "coroutines", "mock")
-includeSubs("koncurrent-later", "later", "core", "coroutines", "test")
+//includeSubs("koncurrent-executors", "executors", "core", "coroutines", "mock")
+includeSubs("koncurrent-executors", "executors", "core")
+//includeSubs("koncurrent-later", "later", "core", "coroutines", "test")
