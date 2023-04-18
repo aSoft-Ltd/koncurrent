@@ -6,18 +6,24 @@ plugins {
 }
 
 kotlin {
-    jvm { library(); withJava() }
-    js(IR) { library() }
+    if (Targeting.JVM) jvm { library() }
 
-//    val nativeTargets = nativeTargets(true)
-    val nativeTargets = linuxTargets(true)
+    if (Targeting.JS) js(IR) { library(testTimeout = 10000) }
+
+//    if (Targeting.WASM) wasm { library() }
+
+    val osxTargets = if (Targeting.OSX) osxTargets() else listOf()
+//    val ndkTargets = if (Targeting.NDK) ndkTargets() else listOf()
+    val linuxTargets = if (Targeting.LINUX) linuxTargets() else listOf()
+    val mingwTargets = if (Targeting.MINGW) mingwTargets() else listOf()
+
+    val nativeTargets = osxTargets + /*ndkTargets +*/ linuxTargets + mingwTargets
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(projects.koncurrentPrimitivesCore)
+                api(projects.koncurrentExecutorsCore)
                 api(projects.kollectionsInteroperable)
-                api(projects.koncurrentLaterApi)
                 api(projects.kaseCore)
                 api(projects.kollectionsAtomic)
             }
@@ -25,8 +31,8 @@ kotlin {
 
         val commonTest by getting {
             dependencies {
-                implementation(project(":expect-core"))
-                implementation(projects.koncurrentPrimitivesMock)
+                implementation(projects.kommanderCore)
+                implementation(projects.koncurrentExecutorsMock)
                 implementation(projects.koncurrentLaterTest)
             }
         }

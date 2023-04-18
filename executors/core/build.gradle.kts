@@ -22,7 +22,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(project(":functions-core"))
+                api(projects.functionsCore)
             }
         }
 
