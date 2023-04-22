@@ -23,20 +23,27 @@ kotlin {
             }
         }
 
-
         val nonJvmMain by creating {
             dependsOn(commonMain)
         }
 
-        val jsMain by getting {
-            dependsOn(nonJvmMain)
+        if (Targeting.JS) {
+            val jsMain by getting {
+                dependsOn(nonJvmMain)
+            }
+        }
+
+        if (Targeting.WASM) {
+            val wasmMain by getting {
+                dependsOn(nonJvmMain)
+            }
         }
 
         val nativeMain by creating {
             dependsOn(nonJvmMain)
         }
 
-        (nativeTargets).forEach {
+        nativeTargets.forEach {
             val main by it.compilations.getting {}
             main.defaultSourceSet {
                 dependsOn(nativeMain)

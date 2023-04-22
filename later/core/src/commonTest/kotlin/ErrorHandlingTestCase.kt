@@ -1,11 +1,11 @@
-import kommander.WatchOsIgnore
+import kommander.IgnoreOSX
 import kommander.expect
 import koncurrent.Later
 import koncurrent.MockExecutor
 import koncurrent.SynchronousExecutor
 import kotlin.test.Test
 
-@WatchOsIgnore
+@IgnoreOSX
 class ErrorHandlingTestCase {
 
     val executor = MockExecutor()

@@ -1,4 +1,4 @@
-import kommander.WatchOsIgnore
+import kommander.IgnoreOSX
 import kommander.expect
 import koncurrent.Later
 import koncurrent.MockExecutor
@@ -7,7 +7,7 @@ import koncurrent.later.finally
 import koncurrent.later.then
 import kotlin.test.Test
 
-@WatchOsIgnore
+@IgnoreOSX
 class NestedValuesTest {
 
     @Test

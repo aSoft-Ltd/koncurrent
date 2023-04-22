@@ -1,4 +1,4 @@
-import kommander.WatchOsIgnore
+import kommander.IgnoreOSX
 import kommander.expect
 import koncurrent.Later
 import koncurrent.LaterPromise
@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import kotlin.test.Ignore
 import kotlin.test.Test
 
-@WatchOsIgnore
+@IgnoreOSX
 class LaterCanTrackProgress {
 
     private val scope = CoroutineScope(Dispatchers.Default)

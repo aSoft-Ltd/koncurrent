@@ -1,4 +1,4 @@
-import kommander.WatchOsIgnore
+import kommander.IgnoreOSX
 import kommander.expect
 import koncurrent.Later
 import koncurrent.Laters
@@ -6,7 +6,7 @@ import koncurrent.later.filterSuccessValues
 import koncurrent.later.test
 import kotlin.test.Test
 
-@WatchOsIgnore
+@IgnoreOSX
 class CanAwaitForMultipleLaters {
 
     @Test
