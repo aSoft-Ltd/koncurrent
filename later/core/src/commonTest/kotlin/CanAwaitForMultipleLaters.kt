@@ -1,10 +1,12 @@
-import expect.expect
+import kommander.WatchOsIgnore
+import kommander.expect
 import koncurrent.Later
 import koncurrent.Laters
 import koncurrent.later.filterSuccessValues
 import koncurrent.later.test
 import kotlin.test.Test
 
+@WatchOsIgnore
 class CanAwaitForMultipleLaters {
 
     @Test

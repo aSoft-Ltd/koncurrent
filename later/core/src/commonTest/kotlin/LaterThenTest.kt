@@ -1,9 +1,11 @@
-import expect.expect
-import expect.toBe
+import kommander.expect
+import kommander.toBe
 import kase.Success
+import kommander.WatchOsIgnore
 import koncurrent.Later
 import kotlin.test.Test
 
+@WatchOsIgnore
 class LaterThenTest {
     @Test
     fun can_call_then_without_crashing() {

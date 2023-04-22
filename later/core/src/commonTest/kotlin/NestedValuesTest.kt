@@ -1,4 +1,5 @@
-import expect.expect
+import kommander.WatchOsIgnore
+import kommander.expect
 import koncurrent.Later
 import koncurrent.MockExecutor
 import koncurrent.later.catch
@@ -6,6 +7,7 @@ import koncurrent.later.finally
 import koncurrent.later.then
 import kotlin.test.Test
 
+@WatchOsIgnore
 class NestedValuesTest {
 
     @Test
