@@ -1,17 +1,14 @@
 plugins {
     kotlin("multiplatform")
     id("tz.co.asoft.library")
-    id("io.codearte.nexus-staging")
-    signing
 }
+
+description = "An multiplatform implementation of a Promised based api"
 
 kotlin {
     if (Targeting.JVM) jvm { library() }
-
     if (Targeting.JS) js(IR) { library(testTimeout = 10000) }
-
 //    if (Targeting.WASM) wasm { library() }
-
     val osxTargets = if (Targeting.OSX) osxTargets() else listOf()
 //    val ndkTargets = if (Targeting.NDK) ndkTargets() else listOf()
     val linuxTargets = if (Targeting.LINUX) linuxTargets() else listOf()
@@ -58,8 +55,3 @@ kotlin {
         }
     }
 }
-
-aSoftOSSLibrary(
-    version = asoft.versions.root.get(),
-    description = "An multiplatform implementation of a Promised based api"
-)

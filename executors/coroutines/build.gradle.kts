@@ -1,23 +1,18 @@
 plugins {
     kotlin("multiplatform")
     id("tz.co.asoft.library")
-    id("io.codearte.nexus-staging")
-    signing
 }
+
+description = "A coroutine extension of the primary building blocks needed for running concurrent multiplatform code"
 
 kotlin {
     if (Targeting.JVM) jvm { library() }
-
     if (Targeting.JS) js(IR) { library() }
-
 //    if (Targeting.WASM) wasm { library() }
-
     val osxTargets = if (Targeting.OSX) osxTargets() else listOf()
 //    val ndkTargets = if (Targeting.NDK) ndkTargets() else listOf()
     val linuxTargets = if (Targeting.LINUX) linuxTargets() else listOf()
     val mingwTargets = if (Targeting.MINGW) mingwTargets() else listOf()
-
-    val nativeTargets = osxTargets + /*ndkTargets +*/ linuxTargets + mingwTargets
 
     sourceSets {
         val commonMain by getting {
@@ -28,8 +23,3 @@ kotlin {
         }
     }
 }
-
-aSoftOSSLibrary(
-    version = asoft.versions.root.get(),
-    description = "A coroutine extension of the primary building blocks needed for running concurrent multiplatform code"
-)
