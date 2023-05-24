@@ -54,6 +54,14 @@ fun <T> SuccessfulLater(
 }
 
 @JsExport
+@JsName("FailedLaterWithMessage")
+@JvmOverloads
+fun FailedLater(
+    message: String,
+    executor: Executor = SynchronousExecutor
+): Later<Nothing> = FailedLater(RuntimeException(message))
+
+@JsExport
 @JvmOverloads
 fun FailedLater(
     error: Throwable,
