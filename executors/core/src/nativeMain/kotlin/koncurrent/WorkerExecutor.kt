@@ -1,6 +1,5 @@
 package koncurrent
 
-import functions.Runnable
 import kotlin.native.concurrent.TransferMode
 import kotlin.native.concurrent.Worker
 

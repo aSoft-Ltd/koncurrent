@@ -2,9 +2,6 @@
 
 package koncurrent
 
-import functions.Runnable
-import kotlin.js.JsExport
-
 /**
  * An executor that doesn't really switch thread,
  * but keeps execution on the current thread that is executing
