@@ -7,7 +7,11 @@ import koncurrent.PendingLater
 
 abstract class AbstractLater<T> : PendingLater<T> {
 
-    abstract fun <R> thenRaw(executor: Executor?, onResolved: ((T) -> R)?, onRejected: ((Throwable) -> R)?): PendingLater<R>
+    abstract fun <R> thenRaw(
+        executor: Executor?,
+        onResolved: ((T) -> R)?,
+        onRejected: ((Throwable) -> R)?
+    ): PendingLater<R>
 
     override fun <R> then(
         onResolved: (T) -> R,
@@ -48,6 +52,8 @@ abstract class AbstractLater<T> : PendingLater<T> {
     override fun catch(
         handler: (Throwable) -> @UnsafeVariance T
     ) = thenRaw(executor = null, onResolved = null, handler)
+
+    override fun error(handler: (Throwable) -> T): Later<T> = catch(handler)
 
     abstract fun completeRaw(executor: Executor?, cleaner: (state: Result<T>) -> Any?): Later<T>
 

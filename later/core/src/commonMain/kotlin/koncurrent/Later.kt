@@ -49,8 +49,11 @@ interface Later<out T> {
     @JsName("_ignore_catch1")
     fun catch(handler: (Throwable) -> @UnsafeVariance T, executor: Executor): Later<T>
 
-    @JsName("error")
+    @JsName("error") // Merge this method with error
     fun catch(handler: (Throwable) -> @UnsafeVariance T): Later<T>
+
+    @JsName("catch") // Merge this method with catch
+    fun error(handler: (Throwable) -> @UnsafeVariance T): Later<T>
 
     @JsName("_ignore_complete1")
     fun complete(cleaner: (state: Result<T>) -> Any?, executor: Executor): Later<T>
