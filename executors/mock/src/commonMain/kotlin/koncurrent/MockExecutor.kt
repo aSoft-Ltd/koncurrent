@@ -3,7 +3,6 @@
 
 package koncurrent
 
-import functions.Runnable
 import kotlin.js.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmOverloads
@@ -17,7 +16,9 @@ class MockExecutor @JvmOverloads constructor(
 
     @JvmOverloads
     @JsName("create")
-    constructor(name: String, logOnExecute: Boolean = MockExecutorConfig.DEFAULT_LOG_ON_EXECUTE) : this(MockExecutorConfig(name, logOnExecute))
+    constructor(name: String, logOnExecute: Boolean = MockExecutorConfig.DEFAULT_LOG_ON_EXECUTE) : this(
+        MockExecutorConfig(name, logOnExecute)
+    )
 
     override fun execute(runnable: Runnable) {
         if (config.logOnExecute) println("Executing on ${config.name}")

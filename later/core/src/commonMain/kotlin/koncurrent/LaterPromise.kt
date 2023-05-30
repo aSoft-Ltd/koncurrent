@@ -12,7 +12,6 @@ import kase.progress.StageProgress
 import kase.progress.StageProgressBag
 import kollections.List
 import koncurrent.internal.AbstractLater
-import koncurrent.internal.LaterHandler
 import koncurrent.internal.LaterQueueItem
 import koncurrent.internal.PlatformConcurrentMonad
 import koncurrent.internal.toPlatformConcurrentMonad
