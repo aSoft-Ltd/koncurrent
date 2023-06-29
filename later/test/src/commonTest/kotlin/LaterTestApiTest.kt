@@ -1,4 +1,5 @@
 import expect.expect
+import kommander.expect
 import koncurrent.MockExecutor
 import koncurrent.Later
 import koncurrent.LaterTestResult
@@ -14,7 +15,7 @@ class LaterTestApiTest {
         it + 1
     }.then {
         println("expecting")
-        expect(it).toBe(46)
+        expect<Int>(it).toBe(46)
         println("expected")
         it * 10
     }.then {
