@@ -1,4 +1,4 @@
-@file:Suppress("FunctionName", "NON_EXPORTABLE_TYPE")
+@file:Suppress("FunctionName", "NON_EXPORTABLE_TYPE", "NOTHING_TO_INLINE")
 
 package koncurrent
 
@@ -38,6 +38,11 @@ inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Late
     }
     return l
 }
+
+@JsName("wrapInLater")
+inline fun <T> T.toLater(
+    executor: Executor = SynchronousExecutor
+) : Later<T> = Later(this,executor)
 
 @JsExport
 @JsName("laterOf")
