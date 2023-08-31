@@ -20,9 +20,9 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(projects.koncurrentExecutorsCore)
-                api(projects.kollectionsInteroperable)
+                api(libs.kollections.interoperable)
                 api(projects.kaseCore)
-                api(projects.kollectionsAtomic)
+                api(libs.kollections.atomic)
             }
         }
 
