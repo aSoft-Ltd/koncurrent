@@ -18,7 +18,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(projects.kommanderCoroutines)
+                api(libs.kommander.coroutines)
                 api(projects.koncurrentLaterCore)
                 api(projects.koncurrentExecutorsMock)
             }
