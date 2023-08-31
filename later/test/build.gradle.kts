@@ -19,15 +19,15 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(libs.kommander.coroutines)
-                api(projects.koncurrentLaterCore)
-                api(projects.koncurrentExecutorsMock)
+                api(libs.koncurrent.later.core)
+                api(libs.koncurrent.executors.mock)
             }
         }
 
         val nativeMain by creating {
             dependsOn(commonMain)
             dependencies {
-                api(projects.koncurrentLaterCoroutines)
+                api(libs.koncurrent.later.coroutines)
             }
         }
 

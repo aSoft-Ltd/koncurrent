@@ -17,7 +17,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(projects.koncurrentExecutorsCore)
+                api(libs.koncurrent.executors.core)
             }
         }
     }

@@ -19,9 +19,9 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(projects.koncurrentExecutorsCore)
+                api(libs.koncurrent.executors.core)
                 api(libs.kollections.interoperable)
-                api(projects.kaseCore)
+                api(libs.kase.core)
                 api(libs.kollections.atomic)
             }
         }
@@ -29,8 +29,8 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(libs.kommander.core)
-                implementation(projects.koncurrentExecutorsMock)
-                implementation(projects.koncurrentLaterTest)
+                implementation(libs.koncurrent.executors.mock)
+                implementation(libs.koncurrent.later.test)
             }
         }
 
