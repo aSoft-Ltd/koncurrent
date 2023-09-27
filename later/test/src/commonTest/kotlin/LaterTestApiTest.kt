@@ -1,4 +1,4 @@
-import expect.expect
+import kommander.expect
 import kommander.expect
 import koncurrent.MockExecutor
 import koncurrent.Later
