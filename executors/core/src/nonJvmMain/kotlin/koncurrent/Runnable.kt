@@ -1,3 +1,4 @@
+@file:JsExport
 package koncurrent
 
 actual fun interface Runnable {
