@@ -7,6 +7,7 @@ import kase.Result
 import kase.Success
 import kotlin.jvm.JvmOverloads
 import kollections.List
+import kollections.iEmptyList
 import kollections.toIList
 import koncurrent.later.filterSuccess
 import koncurrent.later.finally
@@ -93,8 +94,12 @@ fun <T> SuccessfulLaterValues(vararg laters: Later<T>): Later<List<T>> = Success
 
 private val lock: ReentrantLock = reentrantLock()
 fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
-    val inputs = laters.map { it as LaterPromise }
     val later = LaterPromise<List<Result<T>>>(executor = SynchronousExecutor)
+    if(laters.isEmpty()) {
+        later.resolveWith(iEmptyList())
+        return later
+    }
+    val inputs = laters.map { it as LaterPromise }
     var resolved = false
     inputs.forEach { l ->
         l.finally(SynchronousExecutor) {
