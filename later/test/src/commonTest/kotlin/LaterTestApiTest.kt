@@ -15,7 +15,7 @@ class LaterTestApiTest {
         it + 1
     }.then {
         println("expecting")
-        expect<Int>(it).toBe(46)
+        expect(it).toBe(46)
         println("expected")
         it * 10
     }.then {

@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask
+
 plugins {
     kotlin("multiplatform")
     id("tz.co.asoft.library")
@@ -8,7 +11,8 @@ description = "Primary building block needed for running concurrent multiplatfor
 kotlin {
     if (Targeting.JVM) jvm { library() }
     if (Targeting.JS) js(IR) { library() }
-    if (Targeting.WASM) wasm { library() }
+    if (Targeting.WASM) wasmJs { library() }
+    if (Targeting.WASM) wasmWasi { library() }
     val osxTargets = if (Targeting.OSX) osxTargets() else listOf()
     val ndkTargets = if (Targeting.NDK) ndkTargets() else listOf()
     val linuxTargets = if (Targeting.LINUX) linuxTargets() else listOf()
@@ -19,7 +23,13 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                api(libs.kotlinx.exports)
+            }
+        }
 
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
             }
         }
 
@@ -27,14 +37,35 @@ kotlin {
             dependsOn(commonMain)
         }
 
+        val jsAndWasmJsMain by creating {
+            dependsOn(nonJvmMain)
+        }
+
+        val jsAndWasmJsTest by creating {
+            dependsOn(commonTest)
+            dependsOn(jsAndWasmJsMain)
+        }
+
         if (Targeting.JS) {
             val jsMain by getting {
-                dependsOn(nonJvmMain)
+                dependsOn(jsAndWasmJsMain)
+            }
+
+            val jsTest by getting {
+                dependsOn(jsAndWasmJsTest)
             }
         }
 
         if (Targeting.WASM) {
-            val wasmMain by getting {
+            val wasmJsMain by getting {
+                dependsOn(jsAndWasmJsMain)
+            }
+
+            val wasmJsTest by getting {
+                dependsOn(jsAndWasmJsTest)
+            }
+
+            val wasmWasiMain by getting {
                 dependsOn(nonJvmMain)
             }
         }
@@ -50,4 +81,18 @@ kotlin {
             }
         }
     }
+}
+
+rootProject.the<NodeJsRootExtension>().apply {
+    nodeVersion = npm.versions.node.version.get()
+    nodeDownloadBaseUrl = npm.versions.node.url.get()
+}
+
+rootProject.tasks.withType<KotlinNpmInstallTask>().configureEach {
+    args.add("--ignore-engines")
+}
+
+tasks.named("wasmJsTestTestDevelopmentExecutableCompileSync").configure {
+    mustRunAfter(tasks.named("jsBrowserTest"))
+    mustRunAfter(tasks.named("jsNodeTest"))
 }

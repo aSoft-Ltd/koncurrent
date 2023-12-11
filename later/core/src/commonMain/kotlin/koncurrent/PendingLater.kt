@@ -4,7 +4,7 @@
 package koncurrent
 
 import kase.progress.ProgressPublisher
-import kotlin.js.JsExport
+import kotlinx.JsExport
 
 interface PendingLater<T> : Later<T>, ProgressPublisher {
     fun resolveWith(value: T): Boolean

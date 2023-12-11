@@ -1,4 +1,3 @@
-@file:JsExport
 package koncurrent
 
 actual interface Executor {

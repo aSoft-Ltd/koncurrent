@@ -6,7 +6,7 @@ package koncurrent
 import kase.ExecutorState
 import kase.Result
 import koncurrent.internal.PlatformConcurrentMonad
-import kotlin.js.JsExport
+import kotlinx.JsExport
 import kotlin.js.JsName
 import kotlin.jvm.JvmOverloads
 import kotlin.jvm.JvmStatic

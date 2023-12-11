@@ -8,7 +8,7 @@ description = "An multiplatform implementation of a Promised based api"
 kotlin {
     if (Targeting.JVM) jvm { library() }
     if (Targeting.JS) js(IR) { library() }
-//    if (Targeting.WASM) wasm { library() }
+    if (Targeting.WASM) wasmJs { library() }
     val osxTargets = if (Targeting.OSX) osxTargets() else listOf()
 //    val ndkTargets = if (Targeting.NDK) ndkTargets() else listOf()
     val linuxTargets = if (Targeting.LINUX) linuxTargets() else listOf()
@@ -18,16 +18,22 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(libs.koncurrent.later.core)
-                api(libs.koncurrent.executors.coroutines)
+                api(projects.koncurrentLaterCore)
+                api(projects.koncurrentExecutorsCoroutines)
             }
         }
 
         val commonTest by getting {
             dependencies {
                 implementation(libs.kommander.coroutines)
-                api(libs.koncurrent.executors.mock)
+                implementation(projects.koncurrentLaterTest)
+                implementation(projects.koncurrentExecutorsMock)
             }
         }
     }
+}
+
+tasks.named("wasmJsTestTestDevelopmentExecutableCompileSync").configure {
+    mustRunAfter(tasks.named("jsBrowserTest"))
+    mustRunAfter(tasks.named("jsNodeTest"))
 }

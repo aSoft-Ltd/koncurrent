@@ -15,7 +15,7 @@ import koncurrent.later.mapValues
 import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
-import kotlin.js.JsExport
+import kotlinx.JsExport
 import kotlin.js.JsName
 
 inline fun <T> Later(
