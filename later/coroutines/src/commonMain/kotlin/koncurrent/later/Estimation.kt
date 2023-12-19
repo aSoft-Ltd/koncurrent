@@ -1,5 +1,6 @@
 package koncurrent.later
 
+import kollections.first
 import koncurrent.Later
 import koncurrent.later
 import kotlin.math.exp
@@ -21,7 +22,7 @@ class EstimationRate(
  * @param until On which conditions should this estimation terminate
  */
 fun CoroutineScope.estimate(bytes: Int, rate: EstimationRate = EstimationRate(), max: Int = 100, until: () -> Boolean): Later<Unit> = later {
-    val (estimating) = it.setStages("estimating")
+    val estimating = it.setStages("estimating").first()
     var tx = 0.0
     val tt = bytes
     while (!until()) {

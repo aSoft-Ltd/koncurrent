@@ -7,8 +7,11 @@ import kase.Result
 import kase.Success
 import kotlin.jvm.JvmOverloads
 import kollections.List
-import kollections.iEmptyList
-import kollections.toIList
+import kollections.all
+import kollections.emptyList
+import kollections.filterIsInstance
+import kollections.forEach
+import kollections.map
 import koncurrent.later.filterSuccess
 import koncurrent.later.finally
 import koncurrent.later.mapValues
@@ -25,7 +28,7 @@ inline fun <T> Later(
 
 @JsExport
 @JsName("pendingLater")
-inline fun <T> PendingLater(executor: Executor = SynchronousExecutor): PendingLater<T> =
+inline fun <T> PendingLater(executor: Executor = Executors.current()): PendingLater<T> =
     LaterPromise(executor = executor)
 
 inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Later<T> {
@@ -42,19 +45,19 @@ inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Late
 
 @JsName("wrapInLater")
 inline fun <T> T.toLater(
-    executor: Executor = SynchronousExecutor
+    executor: Executor = Executors.current()
 ) : Later<T> = Later(this,executor)
 
 @JsExport
 @JsName("laterOf")
 inline fun <T> Later(
     value: T,
-    executor: Executor = SynchronousExecutor
+    executor: Executor = Executors.current()
 ): Later<T> = SuccessfulLater(value, executor)
 
 fun <T> SuccessfulLater(
     value: T,
-    executor: Executor = SynchronousExecutor
+    executor: Executor = Executors.current()
 ): Later<T> = PendingLater<T>(executor).apply {
     resolveWith(value)
 }
@@ -64,14 +67,14 @@ fun <T> SuccessfulLater(
 @JvmOverloads
 fun FailedLater(
     message: String,
-    executor: Executor = SynchronousExecutor
-): Later<Nothing> = FailedLater(RuntimeException(message))
+    executor: Executor = Executors.current()
+): Later<Nothing> = FailedLater(RuntimeException(message),executor)
 
 @JsExport
 @JvmOverloads
 fun FailedLater(
     error: Throwable,
-    executor: Executor = SynchronousExecutor
+    executor: Executor = Executors.current()
 ): Later<Nothing> = PendingLater<Nothing>(executor).apply {
     rejectWith(error)
 }
@@ -80,7 +83,7 @@ fun FailedLater(
 @JvmOverloads
 fun TODOLater(
     message: String = "Not implemented",
-    executor: Executor = SynchronousExecutor
+    executor: Executor = Executors.current()
 ): Later<Nothing> = PendingLater<Nothing>(executor).apply {
     rejectWith(NotImplementedError(message))
 }
@@ -94,20 +97,20 @@ fun <T> SuccessfulLaterValues(vararg laters: Later<T>): Later<List<T>> = Success
 
 private val lock: ReentrantLock = reentrantLock()
 fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
-    val later = LaterPromise<List<Result<T>>>(executor = SynchronousExecutor)
+    val later = LaterPromise<List<Result<T>>>(executor = Executors.current())
     if(laters.isEmpty()) {
-        later.resolveWith(iEmptyList())
+        later.resolveWith(emptyList())
         return later
     }
     val inputs = laters.map { it as LaterPromise }
     var resolved = false
     inputs.forEach { l ->
-        l.finally(SynchronousExecutor) {
+        l.finally(Executors.current()) {
             if (!resolved) lock.withLock {
                 val states = inputs.map { it.state }
                 if (states.all { it is Result<Any?> }) {
                     resolved = true
-                    val stateList = states.filterIsInstance<Result<T>>().toIList()
+                    val stateList = states.filterIsInstance<Result<T>>()
                     later.resolveWith(stateList)
                 }
             }

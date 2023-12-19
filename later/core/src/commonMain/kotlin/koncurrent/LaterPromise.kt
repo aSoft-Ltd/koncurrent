@@ -11,6 +11,9 @@ import kase.progress.Stage
 import kase.progress.StageProgress
 import kase.progress.StageProgressBag
 import kollections.List
+import kollections.add
+import kollections.clear
+import kollections.forEach
 import koncurrent.internal.AbstractLater
 import koncurrent.internal.LaterQueueItem
 import koncurrent.internal.PlatformConcurrentMonad
@@ -120,8 +123,10 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
         return s.progress
     }
 
-    private fun notifyState(s: ExecutorState<T>) = progressStateQueue.forEach { callback ->
-        callback(s)
+    private fun notifyState(s: ExecutorState<T>) {
+        progressStateQueue.forEach { callback ->
+            callback(s)
+        }
     }
 
     override fun resolveWith(value: T): Boolean {
@@ -178,8 +183,10 @@ class LaterPromise<T>(handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> U
     }
 
     private fun propagateSuccess(value: T) {
+        println("Then queue loop")
         thenQueue.forEach { it.propagateSuccess(value) }
         thenQueue.clear()
+        println("Finally queue loop queue loop")
         finallyQueue.forEach { it.propagateFinalSuccess(value) }
         finallyQueue.clear()
     }

@@ -41,28 +41,15 @@ kotlin {
             dependsOn(nonJvmMain)
         }
 
-        val jsAndWasmJsTest by creating {
-            dependsOn(commonTest)
-            dependsOn(jsAndWasmJsMain)
-        }
-
         if (Targeting.JS) {
             val jsMain by getting {
                 dependsOn(jsAndWasmJsMain)
-            }
-
-            val jsTest by getting {
-                dependsOn(jsAndWasmJsTest)
             }
         }
 
         if (Targeting.WASM) {
             val wasmJsMain by getting {
                 dependsOn(jsAndWasmJsMain)
-            }
-
-            val wasmJsTest by getting {
-                dependsOn(jsAndWasmJsTest)
             }
 
             val wasmWasiMain by getting {
@@ -84,8 +71,8 @@ kotlin {
 }
 
 rootProject.the<NodeJsRootExtension>().apply {
-    nodeVersion = npm.versions.node.version.get()
-    nodeDownloadBaseUrl = npm.versions.node.url.get()
+    version = npm.versions.node.version.get()
+    downloadBaseUrl = npm.versions.node.url.get()
 }
 
 rootProject.tasks.withType<KotlinNpmInstallTask>().configureEach {

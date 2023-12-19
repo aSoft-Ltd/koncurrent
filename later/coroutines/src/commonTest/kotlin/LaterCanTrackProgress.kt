@@ -8,6 +8,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.test.Ignore
+import kollections.get
+import kollections.component1
+import kollections.component2
 import kotlin.test.Test
 
 @IgnoreOSX
@@ -17,15 +20,17 @@ class LaterCanTrackProgress {
 
     fun user(): Later<String> {
         val l = LaterPromise<String>()
-        val (s1, s2) = l.setStages("Stage 1", "Stage 2")
+        val stages = l.setStages("Stage 1", "Stage 2")
+        val s1 = stages[0]
+        val s2 = stages[1]
         scope.launch {
             for (i in 0..5) {
-                delay(500)
+                delay(5)
                 l.updateProgress(s1(i * 10L, 100))
             }
 
             for (i in 5..10) {
-                delay(500)
+                delay(5)
                 l.updateProgress(s2(i * 10L, 100))
             }
             l.resolveWith("Jane")
@@ -40,12 +45,12 @@ class LaterCanTrackProgress {
             val (reading, writing) = l.setStages("Reading", "Writing")
 
             for (i in 0..10) {
-                delay(100)
+                delay(1)
                 l.updateProgress(reading(i * 10L, 100))
             }
 
             for (i in 0..10) {
-                delay(100)
+                delay(1)
                 l.updateProgress(writing(i * 10L, 100))
             }
             l.resolveWith("Jane")

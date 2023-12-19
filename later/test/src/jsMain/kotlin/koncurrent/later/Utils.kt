@@ -1,3 +1,5 @@
+@file:Suppress("ACTUAL_WITHOUT_EXPECT", "EXPECT_ACTUAL_INCOMPATIBILITY")
+
 package koncurrent.later
 
 import kase.Failure
