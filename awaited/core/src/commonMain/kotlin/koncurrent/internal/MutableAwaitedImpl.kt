@@ -152,8 +152,11 @@ internal class MutableAwaitedImpl<T>(handler: ((resolve: (T) -> Unit, reject: ((
         val r = resolver ?: return awaited.resolveWith(value)
         executor.execute {
             try {
+                println("before resolving: $value")
                 awaited.resolveWith(r(value))
+                println("after resolving: $value")
             } catch (err: Throwable) {
+                println("Failed to resolve $value, Now rejecting with ${err.message}")
                 awaited.rejectWith(err)
             }
         }
@@ -218,6 +221,7 @@ internal class MutableAwaitedImpl<T>(handler: ((resolve: (T) -> Unit, reject: ((
     }
 
     private fun propagateFailure(error: Throwable) {
+        println("Propagating error of ${error.message}")
         thenQueue.forEach { it.propagateFailure(error) }
         thenQueue.clear()
         finallyQueue.forEach { it.propagateFinalFailure(error) }
