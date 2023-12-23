@@ -19,6 +19,7 @@ listOf(
 
 rootProject.name = "koncurrent"
 
+includeSubs("koncurrent", ".", "utils")
 includeSubs("koncurrent-executors", "executors", "core", "coroutines", "mock")
-includeSubs("koncurrent-later", "later", "core", "coroutines", "test")
 includeSubs("koncurrent-awaited", "awaited", "core", "coroutines", "test")
+includeSubs("koncurrent-later", "later", "core", "coroutines", "test")

@@ -7,7 +7,7 @@ import koncurrent.FailedAwaited
 import koncurrent.Awaited
 import koncurrent.SuccessfulAwaited
 
-fun <D> Result<D>.toAwaited(): Awaited<D> = when (this) {
+inline fun <D> Result<D>.toAwaited(): Awaited<D> = when (this) {
     is Success -> SuccessfulAwaited(data)
     is Failure -> FailedAwaited(cause)
 }

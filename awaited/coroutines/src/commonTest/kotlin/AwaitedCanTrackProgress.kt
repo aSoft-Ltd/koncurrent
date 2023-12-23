@@ -1,7 +1,6 @@
 import kommander.IgnoreOSX
 import kommander.expect
 import koncurrent.Awaited
-import koncurrent.MutableAwaited
 import koncurrent.awaited.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

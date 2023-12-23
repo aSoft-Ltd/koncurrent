@@ -8,7 +8,7 @@ import kase.Result
 import kotlinx.JsExport
 import kotlinx.JsExportIgnore
 
-interface Awaited<out T> {
+interface Awaited<out T> : NativeAwaited<T> {
     val state: ExecutorState<T>
 
     /**

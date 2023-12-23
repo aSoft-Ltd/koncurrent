@@ -1,6 +1,5 @@
 package koncurrent.promise
 
-import koncurrent.Promise
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException

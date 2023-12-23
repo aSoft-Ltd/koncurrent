@@ -1,13 +1,7 @@
-@file:JsExport
-@file:Suppress("WRONG_EXPORTED_DECLARATION")
-
 package koncurrent
 
-import kase.progress.ProgressPublisher
-import kotlinx.JsExport
+expect class PendingLater<T> : Later<T>
 
-interface PendingLater<T> : Later<T>, ProgressPublisher {
-    fun resolveWith(value: T): Boolean
+expect fun <T> PendingLater<T>.resolveWith(value: T) : Boolean
 
-    fun rejectWith(error: Throwable): Boolean
-}
+expect fun <T> PendingLater<T>.rejectWith(error: Throwable) : Boolean

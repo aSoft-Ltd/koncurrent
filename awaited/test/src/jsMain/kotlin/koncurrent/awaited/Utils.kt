@@ -5,7 +5,6 @@ package koncurrent.awaited
 import kase.Failure
 import kase.Success
 import koncurrent.Awaited
-import koncurrent.Promise
 
 actual inline fun Awaited<Any?>.test(): dynamic = Promise { resolve, reject ->
     complete { res ->

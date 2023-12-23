@@ -1,13 +1,11 @@
 import kommander.IgnoreOSX
 import kommander.expect
 import koncurrent.Later
-import koncurrent.LaterPromise
 import koncurrent.later.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.test.Ignore
 import kollections.get
 import kollections.component1
 import kollections.component2

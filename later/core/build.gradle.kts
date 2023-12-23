@@ -24,48 +24,38 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(projects.koncurrentExecutorsCore)
-                api(libs.kollections.interoperable)
+                api(projects.koncurrentUtils)
                 api(libs.kase.core)
-                api(libs.kollections.atomic)
+                api(libs.kollections.interoperable)
             }
         }
 
-
-        val nonJvmMain by creating {
+        val awaitedMain by creating {
             dependsOn(commonMain)
-        }
-
-        val wasmAndNativeMain by creating {
-            dependsOn(nonJvmMain)
-        }
-
-        if(Targeting.JS) {
-            val jsMain by getting {
-                dependsOn(nonJvmMain)
+            dependencies {
+                api(projects.koncurrentAwaitedCore)
             }
+        }
+
+        val jvmMain by getting {
+            dependsOn(awaitedMain)
         }
 
         if(Targeting.WASM) {
 
             val wasmJsMain by getting {
-                dependsOn(wasmAndNativeMain)
+                dependsOn(awaitedMain)
             }
 
             val wasmWasiMain by getting {
-                dependsOn(wasmAndNativeMain)
-            }
-
-            val wasmJsTest by getting {
-                dependencies {
-                    implementation(kotlin("test"))
-                }
+                dependsOn(awaitedMain)
             }
         }
 
         (nativeTargets).forEach {
             val main by it.compilations.getting {}
             main.defaultSourceSet {
-                dependsOn(wasmAndNativeMain)
+                dependsOn(awaitedMain)
             }
         }
     }

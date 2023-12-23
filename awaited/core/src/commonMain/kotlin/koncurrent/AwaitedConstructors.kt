@@ -15,7 +15,6 @@ import kollections.map
 import koncurrent.awaited.filterSuccess
 import koncurrent.awaited.finally
 import koncurrent.awaited.mapValues
-import koncurrent.internal.MutableAwaitedImpl
 import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
@@ -25,11 +24,11 @@ import kotlin.js.JsName
 inline fun <T> awaited(
     executor: Executor = Executors.default(),
     noinline handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)
-): Awaited<T> = MutableAwaitedImpl(handler, executor)
+): Awaited<T> = MutableAwaited(handler, executor)
 
 @JsExport
 @JsName("mutableAwaited")
-inline fun <T> MutableAwaited(executor: Executor = Executors.current()): MutableAwaited<T> = MutableAwaitedImpl(executor = executor)
+inline fun <T> MutableAwaited(executor: Executor = Executors.current()): MutableAwaited<T> = MutableAwaited(executor = executor, handler = null)
 
 inline fun <T> Executor.awaited(noinline builder: ProgressPublisher.() -> T): Awaited<T> {
     val l = MutableAwaited<T>(executor = this)
@@ -46,7 +45,7 @@ inline fun <T> Executor.awaited(noinline builder: ProgressPublisher.() -> T): Aw
 @JsName("wrapInAwaited")
 inline fun <T> T.toAwaited(
     executor: Executor = Executors.current()
-) : Awaited<T> = awaited(this,executor)
+): Awaited<T> = awaited(this, executor)
 
 @JsExport
 @JsName("awaitedOf")
@@ -68,7 +67,7 @@ fun <T> SuccessfulAwaited(
 fun FailedAwaited(
     message: String,
     executor: Executor = Executors.current()
-): Awaited<Nothing> = FailedAwaited(RuntimeException(message),executor)
+): Awaited<Nothing> = FailedAwaited(RuntimeException(message), executor)
 
 @JsExport
 @JvmOverloads
@@ -97,12 +96,12 @@ fun <T> SuccessfulAwaitedValues(vararg them: Awaited<T>): Awaited<List<T>> = Suc
 
 private val lock: ReentrantLock = reentrantLock()
 fun <T> allAwaited(vararg them: Awaited<T>): Awaited<List<Result<T>>> {
-    val awaited = MutableAwaitedImpl<List<Result<T>>>(executor = Executors.current())
-    if(them.isEmpty()) {
+    val awaited = MutableAwaited<List<Result<T>>>(executor = Executors.current())
+    if (them.isEmpty()) {
         awaited.resolveWith(emptyList())
         return awaited
     }
-    val inputs = them.map { it as MutableAwaitedImpl }
+    val inputs = them.map { it as MutableAwaited }
     var resolved = false
     inputs.forEach { l ->
         l.finally(Executors.current()) {

@@ -4,10 +4,9 @@ import kase.Failure
 import kase.Result
 import kase.Success
 import koncurrent.FailedLater
-import koncurrent.Later
 import koncurrent.SuccessfulLater
 
-fun <D> Result<D>.toLater(): Later<D> = when (this) {
-    is Success -> SuccessfulLater(data)
+inline fun <D> Result<D>.toLater() = when (this) {
     is Failure -> FailedLater(cause)
+    is Success -> SuccessfulLater(data)
 }
