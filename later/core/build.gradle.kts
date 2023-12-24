@@ -37,9 +37,9 @@ kotlin {
             }
         }
 
-        val jvmMain by getting {
-            dependsOn(awaitedMain)
-        }
+//        val jvmMain by getting {
+//            dependsOn(awaitedMain)
+//        }
 
         if(Targeting.WASM) {
 

@@ -1,12 +1,9 @@
-@file:JvmName("BaseUtilsCommon") @file:Suppress("NOTHING_TO_INLINE")
-
 package koncurrent.later
 
 import kase.Result
 import koncurrent.Executor
 import koncurrent.Executors
 import koncurrent.Later
-import kotlin.jvm.JvmName
 
 expect fun <T, R> Later<T>.then(executor: Executor = Executors.default(), onResolved: (T) -> R): Later<R>
 

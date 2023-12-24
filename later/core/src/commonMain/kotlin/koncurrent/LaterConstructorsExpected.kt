@@ -1,4 +1,7 @@
-@file:Suppress("FunctionName", "NON_EXPORTABLE_TYPE", "NOTHING_TO_INLINE")
+@file:Suppress(
+    "FunctionName",
+    "EXPECT_ACTUAL_INCOMPATIBILITY" // for kotlin jvm, K2 would fail to compile once removed
+)
 
 package koncurrent
 
@@ -28,8 +31,8 @@ expect fun <T> PendingLater(executor: Executor = Executors.current()): PendingLa
 //    executor: Executor = Executors.current()
 //): Later<T> = SuccessfulLater(value, executor)
 //
-expect fun <T> SuccessfulLater(value: T,executor: Executor = Executors.current()): Later<T>
-expect fun FailedLater(error: Throwable,executor: Executor = Executors.current()): Later<Nothing>
+expect fun <T> SuccessfulLater(value: T, executor: Executor = Executors.current()): Later<T>
+expect fun FailedLater(error: Throwable, executor: Executor = Executors.current()): Later<Nothing>
 //
 //@JsExport
 //@JvmOverloads

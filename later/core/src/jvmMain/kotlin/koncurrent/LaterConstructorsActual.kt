@@ -1,4 +1,7 @@
-@file:Suppress("FunctionName", "ACTUAL_WITHOUT_EXPECT", "NOTHING_TO_INLINE") // @file:Suppress("ACTUAL_WITHOUT_EXPECT", "ACTUAL_TYPE_ALIAS_TO_CLASS_WITH_DECLARATION_SITE_VARIANCE")
+@file:Suppress(
+    "FunctionName",
+    "NOTHING_TO_INLINE"
+)
 
 package koncurrent
 

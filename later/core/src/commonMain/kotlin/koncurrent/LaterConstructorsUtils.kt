@@ -1,10 +1,10 @@
-@file:Suppress("FunctionName", "NON_EXPORTABLE_TYPE", "NOTHING_TO_INLINE")
+@file:Suppress("FunctionName")
 
 package koncurrent
 
 inline fun <T> T.toLater(
     executor: Executor = Executors.current()
-) = SuccessfulLater(this,executor)
+) = SuccessfulLater(this, executor)
 
 inline fun <T> Later(
     value: T,
@@ -14,12 +14,12 @@ inline fun <T> Later(
 inline fun FailedLater(
     message: String,
     executor: Executor = Executors.current()
-) = FailedLater(RuntimeException(message),executor)
+) = FailedLater(RuntimeException(message), executor)
 
 inline fun TODOLater(
     message: String = "Not implemented",
     executor: Executor = Executors.current()
-) = FailedLater(NotImplementedError(message),executor)
+) = FailedLater(NotImplementedError(message), executor)
 
 //fun <T> SuccessfulLaters(vararg laters: Later<T>): Later<List<Success<T>>> = Laters(*laters).then { it.filterSuccess() }
 //
