@@ -9,6 +9,11 @@ import kollections.List
 import kollections.filterIsInstance
 import kollections.map
 import koncurrent.Later
+import koncurrent.later.then
+import koncurrent.later.andThen
+import koncurrent.later.andZip
+import koncurrent.later.zip
+import koncurrent.later.catch
 import kotlin.jvm.JvmName
 
 @JvmName("filterSuccessFromResult")

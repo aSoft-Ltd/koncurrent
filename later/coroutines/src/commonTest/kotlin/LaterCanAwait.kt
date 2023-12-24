@@ -15,16 +15,12 @@ class LaterCanAwait {
             zero = 0
             res(25)
         }.then {
-            println("danger here")
             1 divide zero // so that it fails
         }.then {
-            println("danger cont...")
             it * 2
         }.catch {
-            println("Recovering")
             zero
         }.then {
-            println("Recovered")
             it + 1
         }
 

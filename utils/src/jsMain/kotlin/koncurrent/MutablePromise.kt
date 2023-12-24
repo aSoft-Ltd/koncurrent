@@ -6,7 +6,7 @@ external class MutablePromise<T>(executor: (resolve: (T) -> Unit, reject: (Throw
 
     override fun catch(onRejected: (Throwable) -> @UnsafeVariance T): Promise<T> = definedExternally
 
-    override fun finally(onFinally: () -> Unit): Promise<T> = definedExternally
+//    override fun finally(onFinally: () -> Unit): Promise<T> = definedExternally
 
     companion object {
         fun <S : Any> all(promise: Array<Promise<S>>): Promise<Array<S>>

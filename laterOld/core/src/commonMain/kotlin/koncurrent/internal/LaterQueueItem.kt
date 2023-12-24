@@ -1,6 +1,11 @@
 package koncurrent.internal
 
-import koncurrent.LaterPromise
+import koncurrent.Later
+import koncurrent.later.then
+import koncurrent.later.andThen
+import koncurrent.later.andZip
+import koncurrent.later.zip
+import koncurrent.later.catchPromise
 
 @PublishedApi
 internal class LaterQueueItem<in T, out R>(

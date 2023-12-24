@@ -1,7 +1,12 @@
 package koncurrent.internal
 
 import koncurrent.Executor
-import koncurrent.LaterPromise
+import koncurrent.Later
+import koncurrent.later.then
+import koncurrent.later.andThen
+import koncurrent.later.andZip
+import koncurrent.later.zip
+import koncurrent.later.catchPromise
 import koncurrent.Promise
 import koncurrent.later.toPromise
 

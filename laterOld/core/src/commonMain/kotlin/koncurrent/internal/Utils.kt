@@ -4,7 +4,12 @@
 package koncurrent.internal
 
 import koncurrent.Executor
-import koncurrent.LaterPromise
+import koncurrent.Later
+import koncurrent.later.then
+import koncurrent.later.andThen
+import koncurrent.later.andZip
+import koncurrent.later.zip
+import koncurrent.later.catchPromise
 import kotlin.jvm.JvmName
 
 internal expect fun <T> LaterPromise<T>.toPlatformConcurrentMonad(executor: Executor): PlatformConcurrentMonad<T>

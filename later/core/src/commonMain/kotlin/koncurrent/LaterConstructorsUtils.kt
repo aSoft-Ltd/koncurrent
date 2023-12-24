@@ -22,11 +22,13 @@ import kollections.keys
 import kollections.set
 import kollections.size
 import kollections.toMutableMap
+import kollections.toTypedArray
 import kollections.values
 import koncurrent.later.filterSuccess
 import koncurrent.later.finally
 import koncurrent.later.mapValues
 import koncurrent.later.then
+import kotlinx.JsName
 import kotlinx.atomicfu.locks.ReentrantLock
 import kotlinx.atomicfu.locks.reentrantLock
 import kotlinx.atomicfu.locks.withLock
@@ -57,6 +59,10 @@ fun <T> SuccessfulLaterValues(vararg laters: Later<T>): Later<List<T>> = Success
 }
 
 private val lock: ReentrantLock = reentrantLock()
+
+@JsName("latersFromList")
+fun <T> Laters(them: List<Later<T>>) = Laters(*them.toTypedArray())
+
 fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
     val executor = Executors.default()
     val later = PendingLater<List<Result<T>>>(executor)

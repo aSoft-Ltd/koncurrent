@@ -4,6 +4,11 @@ package koncurrent.later
 
 import koncurrent.Executor
 import koncurrent.Later
+import koncurrent.later.then
+import koncurrent.later.andThen
+import koncurrent.later.andZip
+import koncurrent.later.zip
+import koncurrent.later.catch
 import java.util.concurrent.CompletableFuture
 import java.util.function.BiConsumer
 

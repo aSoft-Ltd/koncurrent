@@ -5,5 +5,5 @@ external interface Promise<out T> {
 
     fun catch(onRejected: (Throwable) -> @UnsafeVariance T): Promise<T>
 
-    fun finally(onFinally: () -> Unit): Promise<T>
+//    fun finally(onFinally: () -> Unit): Promise<T> // adding this in messes up the finally extension method
 }

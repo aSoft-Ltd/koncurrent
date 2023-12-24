@@ -5,6 +5,11 @@ package koncurrent.later
 import kase.Failure
 import kase.Success
 import koncurrent.Later
+import koncurrent.later.then
+import koncurrent.later.andThen
+import koncurrent.later.andZip
+import koncurrent.later.zip
+import koncurrent.later.catch
 import koncurrent.MutablePromise
 
 actual inline fun Later<out Any?>.test(): dynamic = MutablePromise { resolve, reject ->
