@@ -27,6 +27,7 @@ kotlin {
                 api(projects.koncurrentUtils)
                 api(libs.kase.core)
                 api(libs.kollections.interoperable)
+                api(kotlinx.atomicfu)
             }
         }
 

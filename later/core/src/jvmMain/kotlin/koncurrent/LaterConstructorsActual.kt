@@ -6,6 +6,7 @@
 package koncurrent
 
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.CompletionStage
 
 actual inline fun <T> Later(
     executor: Executor,
