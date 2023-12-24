@@ -20,6 +20,7 @@ import kollections.filterIsInstance
 import kollections.forEach
 import kollections.keys
 import kollections.set
+import kollections.size
 import kollections.toMutableMap
 import kollections.values
 import koncurrent.later.filterSuccess
@@ -64,16 +65,22 @@ fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
         return later
     }
     val inputs = laters.associate { it to (Executing() as ExecutorState<T>) }.toMutableMap()
+    println("We have: ${inputs.size} inputs(s)")
     inputs.keys.forEach { l ->
         l.finally(executor) { res ->
+            println("finalizing input")
             lock.withLock {
-                inputs[l] = res.toExecutorState()
+                val state = res.toExecutorState()
+                println("state: $state")
+                inputs[l] = state
                 if (inputs.values.all { it is Success || it is Failure }) {
+                    println("Resolving all of them now")
                     later.resolveWith(inputs.values.filterIsInstance<Result<T>>())
                 }
             }
         }
     }
+    println("We Finished scheduling: ${inputs.size} inputs(s)")
     return later
 }
 

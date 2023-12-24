@@ -6,4 +6,7 @@ package koncurrent.later
 import koncurrent.Later
 import koncurrent.LaterTestResult
 
-expect inline fun Later<Any?>.test(): LaterTestResult
+/*
+ Do not remove the redundant invariance 'out'. It is needed for Jvm
+ */
+expect inline fun Later<out Any?>.test(): LaterTestResult

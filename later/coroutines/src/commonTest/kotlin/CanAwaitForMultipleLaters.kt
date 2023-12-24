@@ -1,3 +1,4 @@
+import kollections.forEach
 import kollections.toTypedArray
 import kommander.IgnoreOSX
 import kommander.expect
@@ -31,6 +32,10 @@ class CanAwaitForMultipleLaters {
         Later { res, _ -> res(3) },
         Later { res, _ -> res(4) },
     ).then {
+        println("Resolved")
+        it.forEach {res->
+            println(res)
+        }
         it.filterSuccessValues().toTypedArray().sum()
     }.then {
         expect(it).toBe(1 + 2 + 3 + 4)

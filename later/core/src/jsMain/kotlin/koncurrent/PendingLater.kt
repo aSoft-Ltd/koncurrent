@@ -24,7 +24,7 @@ internal var <T> PendingLater<T>.resolver: Resolver<T>?
     }
     get() = asDynamic()[PENDING_LATER_RESOLVER_NAME]
 
-private const val PENDING_LATER_REJECTOR_NAME = "_later_resolver"
+private const val PENDING_LATER_REJECTOR_NAME = "_later_rejector"
 
 internal var <T> PendingLater<T>.rejecter: Rejecter?
     set(value) {

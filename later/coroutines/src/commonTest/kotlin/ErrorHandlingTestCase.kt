@@ -1,11 +1,11 @@
 import kommander.IgnoreOSX
 import kommander.expect
 import koncurrent.Later
-import koncurrent.later.then
-import koncurrent.later.andThen
-import koncurrent.later.catch
+import koncurrent.LaterTestResult
 import koncurrent.MockExecutor
-import koncurrent.SynchronousExecutor
+import koncurrent.later.catch
+import koncurrent.later.test
+import koncurrent.later.then
 import kotlin.test.Test
 
 @IgnoreOSX
@@ -14,11 +14,11 @@ class ErrorHandlingTestCase {
     val executor = MockExecutor()
 
     @Test
-    fun should_propagate_errors_down_stream() {
+    fun should_propagate_errors_down_stream(): LaterTestResult {
         var blockcount = 0
         var result = -1
         var zero = -1
-        Later(executor) { res, _ ->
+        return Later(executor) { res, _ ->
             blockcount++
             zero = 0
             res(25)
@@ -35,16 +35,16 @@ class ErrorHandlingTestCase {
             blockcount++
             it + 1
             result = it + 1
-        }
-        expect(blockcount).toBe(4, "Chained code blocks where not executed as expected")
-        expect(result).toBe(1)
+            expect(blockcount).toBe(4, "Chained code blocks where not executed as expected")
+            expect(result).toBe(1)
+        }.test()
     }
 
     @Test
-    fun should_execute_catch_when_it_encounters_an_error() {
+    fun should_execute_catch_when_it_encounters_an_error() : LaterTestResult {
         var blockcount = 0
         var result = 0
-        Later(0, executor).then {
+        return Later(0, executor).then {
             blockcount++
             it divide it
         }.catch {
@@ -53,16 +53,16 @@ class ErrorHandlingTestCase {
         }.then {
             blockcount++
             result = it
-        }
-        expect(blockcount).toBe(3)
-        expect(result).toBe(5)
+            expect(blockcount).toBe(3)
+            expect(result).toBe(5)
+        }.test()
     }
 
     @Test
-    fun should_not_execute_catch_if_there_are_no_errors() {
+    fun should_not_execute_catch_if_there_are_no_errors() : LaterTestResult {
         var blockcount = 0
         var result = 0
-        Later(4, executor).then {
+        return Later(4, executor).then {
             blockcount++
             it + 7
         }.catch {
@@ -71,48 +71,48 @@ class ErrorHandlingTestCase {
         }.then {
             blockcount++
             result = it
-        }
-        expect(blockcount).toBe(2)
-        expect(result).toBe(11)
+            expect(blockcount).toBe(2)
+            expect(result).toBe(11)
+        }.test()
     }
 
     @Test
-    fun can_totally_chain_errors_and_then_blocks_continuously() {
+    fun can_totally_chain_errors_and_then_blocks_continuously() : LaterTestResult {
         var blockcount = 0
         var result = 0
-        Later(4, SynchronousExecutor).then {
+        return Later(4, executor).then {
             blockcount++       // 1
             val ret = it + 7
-            println("ret(then): $ret")
+            expect(blockcount).toBe(1)
             ret // 11
         }.then {
             blockcount++
             val ret = it - 11       // 2
-            println("ret(then): $ret")
+            expect(blockcount).toBe(2)
             ret               // 0
         }.then {
             blockcount++       // 3
             val ret = it divide it
-            println("ret(then): $ret")
+            expect(blockcount).toBe(3)
             ret             // error
         }.catch {
             blockcount++       // 4
-            println("ret(catch): 5")
+            expect(blockcount).toBe(4)
             5
         }.then {
             blockcount++       // 5
             result = it        //
-            println("res(then): $result")
-        }
-        expect(blockcount).toBe(5, "Chained code blocks where not executed as expected")
-        expect(result).toBe(5)
+            expect(blockcount).toBe(5)
+            expect(blockcount).toBe(5, "Chained code blocks where not executed as expected")
+            expect(result).toBe(5)
+        }.test()
     }
 
     @Test
-    fun can_totally_chain_many_errors_and_then_blocks_continuously() {
+    fun can_totally_chain_many_errors_and_then_blocks_continuously() : LaterTestResult {
         var blockcount = 0
         var result = 0
-        Later(4, executor).then {
+        return Later(4, executor).then {
             blockcount++
             it + 7
         }.then {
@@ -136,8 +136,8 @@ class ErrorHandlingTestCase {
         }.then {
             blockcount++
             result = it
-        }
-        expect(blockcount).toBe(8, "Chained code blocks where not executed as expected")
-        expect(result).toBe(0)
+            expect(blockcount).toBe(8, "Chained code blocks where not executed as expected")
+            expect(result).toBe(0)
+        }.test()
     }
 }

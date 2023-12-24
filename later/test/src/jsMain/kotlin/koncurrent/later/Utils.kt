@@ -7,7 +7,7 @@ import kase.Success
 import koncurrent.Later
 import koncurrent.MutablePromise
 
-actual inline fun Later<Any?>.test(): dynamic = MutablePromise { resolve, reject ->
+actual inline fun Later<out Any?>.test(): dynamic = MutablePromise { resolve, reject ->
     finally { res ->
         when (res) {
             is Failure -> reject(res.cause)

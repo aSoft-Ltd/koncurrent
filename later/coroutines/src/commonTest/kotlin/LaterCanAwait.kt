@@ -16,7 +16,7 @@ class LaterCanAwait {
             res(25)
         }.then {
             println("danger here")
-            1 / zero // so that it fails
+            1 divide zero // so that it fails
         }.then {
             println("danger cont...")
             it * 2

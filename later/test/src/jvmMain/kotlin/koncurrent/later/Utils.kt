@@ -1,10 +1,10 @@
+@file:Suppress("ACTUAL_WITHOUT_EXPECT")
 package koncurrent.later
 
 import koncurrent.Later
 import koncurrent.LaterTestResult
 
-@Suppress("ACTUAL_WITHOUT_EXPECT")
-actual inline fun Later<Any?>.test(): LaterTestResult {
+actual inline fun Later<out Any?>.test(): LaterTestResult {
     toCompletableFuture().get()
     Unit
 }
