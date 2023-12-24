@@ -1,9 +1,11 @@
 package koncurrent.later
 
-import kase.ExecutorState
 import kase.Failure
 import kase.Result
 import kase.Success
+import kase.progress.ProgressBus
+import kase.progress.ProgressState
+import kase.progress.VoidProgressBus
 import koncurrent.FailedLater
 import koncurrent.Later
 import kotlinx.coroutines.CoroutineScope
@@ -26,12 +28,12 @@ fun <T> Later<T>.asDeferred(scope: CoroutineScope): Deferred<T> = scope.async(st
  * If this [Later] is already in a [Result] state,
  * it returns the [Success.data] immediately or throws the [Failure.cause]
  */
-suspend fun <T> Later<T>.await(onUpdate: ((ExecutorState<T>) -> Unit)? = null): T = suspendCancellableCoroutine { cont ->
-    if (onUpdate != null) this.onUpdate(onUpdate)
-    finally {
-        when (it) {
-            is Success -> cont.resume(it.data)
-            is Failure -> cont.resumeWithException(it.cause)
+suspend fun <T> Later<T>.await(bus: ProgressBus = VoidProgressBus, onUpdate: ((ProgressState) -> Unit)? = null): T = suspendCancellableCoroutine { cont ->
+    if (onUpdate != null) bus.onUpdate(onUpdate)
+    finally { res->
+        when (res) {
+            is Success -> cont.resume(res.data)
+            is Failure -> cont.resumeWithException(res.cause)
         }
     }
 }
@@ -40,7 +42,7 @@ suspend fun <T> Later<T>.await(onUpdate: ((ExecutorState<T>) -> Unit)? = null): 
  * Convert's this [Deferred] into a [Later]
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-fun <T> Deferred<T>.asLater(): Later<T> = if (isCompleted) when (val exp = getCompletionExceptionOrNull()) {
+fun <T> Deferred<T>.asLater() = if (isCompleted) when (val exp = getCompletionExceptionOrNull()) {
     is Throwable -> FailedLater(exp)
     else -> Later(getCompleted())
 } else Later<T> { resolve, reject ->

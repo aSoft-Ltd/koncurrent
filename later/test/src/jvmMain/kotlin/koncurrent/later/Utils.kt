@@ -3,6 +3,8 @@ package koncurrent.later
 import koncurrent.Later
 import koncurrent.LaterTestResult
 
+@Suppress("ACTUAL_WITHOUT_EXPECT")
 actual inline fun Later<Any?>.test(): LaterTestResult {
-    toCompletable().get()
+    toCompletableFuture().get()
+    Unit
 }

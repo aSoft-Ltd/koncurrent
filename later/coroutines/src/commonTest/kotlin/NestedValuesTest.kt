@@ -2,6 +2,7 @@ import kommander.IgnoreOSX
 import kommander.expect
 import koncurrent.Later
 import koncurrent.MockExecutor
+import koncurrent.later.andThen
 import koncurrent.later.catch
 import koncurrent.later.finally
 import koncurrent.later.then

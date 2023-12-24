@@ -5,6 +5,7 @@ import koncurrent.Later
 import koncurrent.Laters
 import koncurrent.later.filterSuccessValues
 import koncurrent.later.test
+import koncurrent.later.then
 import kotlin.test.Test
 
 @IgnoreOSX

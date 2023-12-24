@@ -7,6 +7,10 @@ import kase.ExecutorState
 import kase.Failure
 import kase.Result
 import kase.Success
+import kase.progress.ProgressBus
+import kase.progress.ProgressPublisher
+import kase.progress.ProgressState
+import kase.progress.VoidProgressBus
 import kase.toExecutorState
 import kollections.List
 import kollections.all
@@ -71,4 +75,21 @@ fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
         }
     }
     return later
+}
+
+fun <T> Executor.later(bus: ProgressBus = VoidProgressBus, builder: ProgressPublisher.() -> T): Later<T> {
+    val l = PendingLater<T>(executor = this)
+    execute {
+        try {
+            l.resolveWith(builder(bus))
+        } catch (err: Throwable) {
+            l.rejectWith(err)
+        }
+    }
+    return l
+}
+
+fun <T> Later<T>.onUpdate(bus: ProgressBus, callback: (ProgressState) -> Unit): Later<T> {
+    bus.onUpdate(callback)
+    return this
 }
