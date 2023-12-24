@@ -12,6 +12,7 @@ import kase.progress.ProgressPublisher
 import kase.progress.ProgressState
 import kase.progress.VoidProgressBus
 import kase.toExecutorState
+import kollections.Collection
 import kollections.List
 import kollections.all
 import kollections.associate
@@ -21,6 +22,7 @@ import kollections.forEach
 import kollections.keys
 import kollections.set
 import kollections.size
+import kollections.toList
 import kollections.toMutableMap
 import kollections.toTypedArray
 import kollections.values
@@ -61,7 +63,7 @@ fun <T> SuccessfulLaterValues(vararg laters: Later<T>): Later<List<T>> = Success
 private val lock: ReentrantLock = reentrantLock()
 
 @JsName("latersFromList")
-fun <T> Laters(them: List<Later<T>>) = Laters(*them.toTypedArray())
+fun <T> Laters(them: Collection<Later<T>>) = Laters(*them.toList().toTypedArray())
 
 fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
     val executor = Executors.default()
