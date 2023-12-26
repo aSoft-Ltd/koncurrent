@@ -1,6 +1,7 @@
 @file:Suppress(
     "FunctionName",
-    "EXPECT_ACTUAL_INCOMPATIBILITY" // for kotlin jvm, K2 would fail to compile once removed
+    "EXPECT_ACTUAL_INCOMPATIBILITY", // for kotlin jvm, K2 would fail to compile once removed
+    "NO_ACTUAL_FOR_EXPECT"
 )
 
 package koncurrent

@@ -12,9 +12,13 @@ import koncurrent.awaited.then
 import kotlin.jvm.JvmName
 
 actual inline fun <T, R> Later<T>.then(executor: Executor, noinline onResolved: (T) -> R): Later<R> = then(executor, onResolved)
+actual inline fun <T, R> Later<T>.then(noinline onResolved: (T) -> R): Later<R> = then(onResolved)
 
 actual inline fun <T, R> Later<T>.andThen(executor: Executor, noinline onResolved: (T) -> Later<R>): Later<R> = andThen(executor, onResolved)
+actual inline fun <T, R> Later<T>.andThen(noinline onResolved: (T) -> Later<R>): Later<R> = andThen(onResolved)
 
 actual inline fun <T> Later<T>.catch(executor: Executor, noinline recover: (Throwable) -> T): Later<T> = catch(executor, recover)
+actual inline fun <T> Later<T>.catch(noinline recover: (Throwable) -> T): Later<T> = catch(recover)
 
 actual inline fun <T> Later<T>.finally(executor: Executor, noinline cleanUp: (state: Result<T>) -> Unit): Later<T> = finally(executor, cleanUp)
+actual inline fun <T> Later<T>.finally(noinline cleanUp: (state: Result<T>) -> Unit): Later<T> = finally(cleanUp)

@@ -1,15 +1,14 @@
 @file:JvmName("UtilsJvm")
+@file:Suppress(
+    "Since15"
+)
 
 package koncurrent.later
 
 import koncurrent.Executor
 import koncurrent.Later
-import koncurrent.later.then
-import koncurrent.later.andThen
-import koncurrent.later.andZip
-import koncurrent.later.zip
-import koncurrent.later.catch
-import java.util.concurrent.CompletableFuture
+import koncurrent.PendingLater
+import java.util.concurrent.CompletionStage
 import java.util.function.BiConsumer
 
 internal inline fun <T> completeConsumer(
@@ -23,10 +22,32 @@ internal inline fun <T> completeConsumer(
     }
 }
 
-fun <T> CompletableFuture<T>.toLater(): Later<T> = Later { resolve, reject ->
-    whenComplete(completeConsumer(resolve, reject))
-} as Later<T>
+fun <T> CompletionStage<T>.toLater(): Later<T> {
+    if (this is Later) return this
+    return Later { resolve, reject ->
+        whenComplete(completeConsumer(resolve, reject))
+    } as Later<T>
+}
 
-fun <T> CompletableFuture<T>.toLater(executor: Executor): Later<T> = Later { resolve, reject ->
-    whenCompleteAsync(completeConsumer(resolve, reject), executor)
-} as Later<T>
+fun <T> CompletionStage<T>.toLater(executor: Executor): Later<T> {
+    if (this is Later) return this
+    return Later { resolve, reject ->
+        whenCompleteAsync(completeConsumer(resolve, reject), executor)
+    }
+}
+
+fun <T> Later<T>.toPendingLater(): PendingLater<T> {
+    if (this is PendingLater) return this
+    val later = PendingLater<T>()
+    whenComplete { value, error ->
+        when {
+            value != null -> later.complete(value)
+            error != null -> later.completeExceptionally(error)
+            else /* value == null && err == null */ -> {
+                val err = IllegalStateException("Completable future didn't return with value or exception")
+                later.completeExceptionally(err)
+            }
+        }
+    }
+    return later
+}

@@ -11,8 +11,8 @@ import kollections.map
 import koncurrent.Later
 import koncurrent.later.then
 import koncurrent.later.andThen
-import koncurrent.later.andZip
-import koncurrent.later.zip
+//import koncurrent.later.andZip
+//import koncurrent.later.zip
 import koncurrent.later.catch
 import koncurrent.later.then
 import kotlin.jvm.JvmName

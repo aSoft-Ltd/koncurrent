@@ -1,33 +1,34 @@
 @file:Suppress(
     "FunctionName",
-    "NOTHING_TO_INLINE"
+    "Since15",
+    "NOTHING_TO_INLINE",
+    "ACTUAL_WITHOUT_EXPECT"
 )
 
 package koncurrent
 
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.CompletionStage
 
 actual inline fun <T> Later(
     executor: Executor,
     crossinline handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)
 ): Later<T> {
-    val future = CompletableFuture<T>()
+    val later = PendingLater<T>()
     executor.execute {
         try {
             handler({
-                future.complete(it)
+                later.complete(it)
             }, {
-                future.completeExceptionally(it)
+                later.completeExceptionally(it)
             })
         } catch (err: Throwable) {
-            future.completeExceptionally(err)
+            later.completeExceptionally(err)
         }
     }
-    return future
+    return later
 }
 
-actual inline fun <T> PendingLater(executor: Executor): PendingLater<T> = CompletableFuture()
+actual inline fun <T> PendingLater(executor: Executor) = PendingLater<T>(executor, CompletableFuture())
 
 //inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Later<T> {
 //    val l = PendingLater<T>(executor = this)
@@ -45,12 +46,12 @@ actual inline fun <T> PendingLater(executor: Executor): PendingLater<T> = Comple
 actual inline fun <T> SuccessfulLater(
     value: T,
     executor: Executor
-): Later<T> = CompletableFuture.completedStage(value)
+): Later<T> = PendingLater.successful(executor, value)
 
 actual inline fun FailedLater(
     error: Throwable,
     executor: Executor
-): Later<Nothing> = CompletableFuture.failedFuture(error)
+): Later<Nothing> = PendingLater.failed(executor,error)
 
 //fun <T> SuccessfulLaters(vararg laters: Later<T>): Later<List<Success<T>>> = Laters(*laters).then { it.filterSuccess() }
 //

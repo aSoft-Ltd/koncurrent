@@ -21,7 +21,6 @@ import kollections.filterIsInstance
 import kollections.forEach
 import kollections.keys
 import kollections.set
-import kollections.size
 import kollections.toList
 import kollections.toMutableMap
 import kollections.toTypedArray
@@ -60,11 +59,11 @@ fun <T> SuccessfulLaterValues(vararg laters: Later<T>): Later<List<T>> = Success
     list.mapValues()
 }
 
-private val lock: ReentrantLock = reentrantLock()
 
 @JsName("latersFromList")
 fun <T> Laters(them: Collection<Later<T>>) = Laters(*them.toList().toTypedArray())
 
+private val lock: ReentrantLock = reentrantLock()
 fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
     val executor = Executors.default()
     val later = PendingLater<List<Result<T>>>(executor)
@@ -73,22 +72,17 @@ fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
         return later
     }
     val inputs = laters.associate { it to (Executing() as ExecutorState<T>) }.toMutableMap()
-    println("We have: ${inputs.size} inputs(s)")
     inputs.keys.forEach { l ->
         l.finally(executor) { res ->
-            println("finalizing input")
             lock.withLock {
                 val state = res.toExecutorState()
-                println("state: $state")
                 inputs[l] = state
                 if (inputs.values.all { it is Success || it is Failure }) {
-                    println("Resolving all of them now")
                     later.resolveWith(inputs.values.filterIsInstance<Result<T>>())
                 }
             }
         }
     }
-    println("We Finished scheduling: ${inputs.size} inputs(s)")
     return later
 }
 

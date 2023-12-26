@@ -1,11 +1,10 @@
 @file:JvmName("UtilsJvm")
+@file:Suppress("Since15")
 
 package koncurrent.awaited
 
-import kase.Failure
-import kase.Success
-import koncurrent.Executor
 import koncurrent.Awaited
+import koncurrent.Executor
 import koncurrent.awaited
 import java.util.concurrent.CompletableFuture
 import java.util.function.BiConsumer
@@ -27,15 +26,4 @@ fun <T> CompletableFuture<T>.toAwaited(): Awaited<T> = awaited { resolve, reject
 
 fun <T> CompletableFuture<T>.toAwaited(executor: Executor): Awaited<T> = awaited { resolve, reject ->
     whenCompleteAsync(completeConsumer(resolve, reject), executor)
-}
-
-fun <T> Awaited<T>.toCompletableFuture(): CompletableFuture<T> {
-    val future = CompletableFuture<T>()
-    complete {
-        when (it) {
-            is Failure -> future.completeExceptionally(it.cause)
-            is Success -> future.complete(it.data)
-        }
-    }
-    return future
 }
