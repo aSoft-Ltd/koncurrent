@@ -4,8 +4,8 @@ import kase.ExecutorState
 import kase.Failure
 import kase.Result
 import kase.Success
-import koncurrent.FailedAwaited
 import koncurrent.Awaited
+import koncurrent.FailedAwaited
 import koncurrent.awaited
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart

@@ -4,8 +4,8 @@
 package koncurrent.awaited
 
 import kase.Result
-import koncurrent.Executor
 import koncurrent.Awaited
+import koncurrent.Executor
 import kotlin.jvm.JvmName
 
 inline fun <T, R> Awaited<T>.then(

@@ -13,22 +13,22 @@ actual inline fun <T> Later(
     executor: Executor,
     crossinline handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)
 ): Later<T> {
-    val later = PendingLater<T>()
+    val future = CompletableFuture<T>()
     executor.execute {
         try {
             handler({
-                later.complete(it)
+                future.complete(it)
             }, {
-                later.completeExceptionally(it)
+                future.completeExceptionally(it)
             })
         } catch (err: Throwable) {
-            later.completeExceptionally(err)
+            future.completeExceptionally(err)
         }
     }
-    return later
+    return future
 }
 
-actual inline fun <T> PendingLater(executor: Executor) = PendingLater<T>(executor, CompletableFuture())
+actual inline fun <T> PendingLater(executor: Executor) = Later<T>()
 
 //inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Later<T> {
 //    val l = PendingLater<T>(executor = this)
@@ -46,12 +46,12 @@ actual inline fun <T> PendingLater(executor: Executor) = PendingLater<T>(executo
 actual inline fun <T> SuccessfulLater(
     value: T,
     executor: Executor
-): Later<T> = PendingLater.successful(executor, value)
+): Later<T> = CompletableFuture.supplyAsync({ value }, executor)
 
 actual inline fun FailedLater(
     error: Throwable,
     executor: Executor
-): Later<Nothing> = PendingLater.failed(executor,error)
+): Later<Nothing> = CompletableFuture.failedFuture(error)
 
 //fun <T> SuccessfulLaters(vararg laters: Later<T>): Later<List<Success<T>>> = Laters(*laters).then { it.filterSuccess() }
 //

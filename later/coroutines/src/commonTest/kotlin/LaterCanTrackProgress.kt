@@ -2,12 +2,7 @@ import kase.progress.ProgressBus
 import kase.progress.VoidProgressBus
 import kommander.IgnoreOSX
 import kommander.expect
-import koncurrent.Later
 import koncurrent.later.then
-import koncurrent.later.andThen
-import koncurrent.later.andZip
-import koncurrent.later.zip
-import koncurrent.later.catch
 import koncurrent.later.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +12,7 @@ import kollections.get
 import kollections.component1
 import kollections.component2
 import koncurrent.PendingLater
+import koncurrent.Later
 import koncurrent.later.then
 import koncurrent.onUpdate
 import koncurrent.resolveWith

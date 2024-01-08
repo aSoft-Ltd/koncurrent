@@ -7,7 +7,7 @@ actual inline fun <T> Later(
      noinline handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)
 ): Later<T> = awaited(executor, handler)
 
-actual inline fun <T> PendingLater(executor: Executor): PendingLater<T> = MutableAwaited(executor)
+actual inline fun <T> PendingLater(executor: Executor): Later<T> = MutableAwaited(executor)
 
 //inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Later<T> {
 //    val l = PendingLater<T>(executor = this)

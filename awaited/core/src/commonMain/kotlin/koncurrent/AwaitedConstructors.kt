@@ -24,11 +24,11 @@ import kotlin.js.JsName
 inline fun <T> awaited(
     executor: Executor = Executors.default(),
     noinline handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)
-): Awaited<T> = MutableAwaited(handler, executor)
+): Awaited<T> = Awaited(handler, executor)
 
 @JsExport
 @JsName("mutableAwaited")
-inline fun <T> MutableAwaited(executor: Executor = Executors.current()): MutableAwaited<T> = MutableAwaited(executor = executor, handler = null)
+inline fun <T> MutableAwaited(executor: Executor = Executors.current()): Awaited<T> = Awaited(executor = executor, handler = null)
 
 inline fun <T> Executor.awaited(noinline builder: ProgressPublisher.() -> T): Awaited<T> {
     val l = MutableAwaited<T>(executor = this)
@@ -101,7 +101,7 @@ fun <T> allAwaited(vararg them: Awaited<T>): Awaited<List<Result<T>>> {
         awaited.resolveWith(emptyList())
         return awaited
     }
-    val inputs = them.map { it as MutableAwaited }
+    val inputs = them.map { it as Awaited }
     var resolved = false
     inputs.forEach { l ->
         l.finally(Executors.current()) {

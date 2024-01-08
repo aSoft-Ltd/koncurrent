@@ -11,7 +11,7 @@ expect fun <T> Later(
     handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)
 ): Later<T>
 
-expect fun <T> PendingLater(executor: Executor = Executors.current()): PendingLater<T>
+expect fun <T> PendingLater(executor: Executor = Executors.current()): Later<T>
 
 //expect fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Later<T> {
 //    val l = PendingLater<T>(executor = this)

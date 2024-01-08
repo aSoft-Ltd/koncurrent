@@ -1,17 +1,9 @@
 import kommander.expect
 import koncurrent.MockExecutor
-import koncurrent.Later
 import koncurrent.later.then
 import koncurrent.later.andThen
-import koncurrent.later.andZip
-import koncurrent.later.zip
-import koncurrent.later.catch
-import koncurrent.Later
 import koncurrent.later.then
 import koncurrent.later.andThen
-import koncurrent.later.andZip
-import koncurrent.later.zip
-import koncurrent.later.catchTestResult
 import koncurrent.later.test
 import koncurrent.later.then
 import koncurrent.later.andThen

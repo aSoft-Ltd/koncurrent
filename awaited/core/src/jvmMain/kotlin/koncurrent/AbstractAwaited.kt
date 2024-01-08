@@ -6,8 +6,8 @@ import kase.Failure
 import kase.Success
 import java.util.concurrent.CompletableFuture
 
-actual abstract class AbstractNativeAwaited<out T> : NativeAwaited<T> {
-    override fun toCompletableFuture(): CompletableFuture<out T> {
+actual abstract class AbstractAwaited<out T> {
+    fun toCompletableFuture(): CompletableFuture<out T> {
         this as Awaited<T>
         val future = CompletableFuture<T>()
         complete {

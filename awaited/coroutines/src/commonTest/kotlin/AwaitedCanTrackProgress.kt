@@ -1,6 +1,5 @@
 import kommander.IgnoreOSX
 import kommander.expect
-import koncurrent.Awaited
 import koncurrent.awaited.test
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -9,6 +8,7 @@ import kotlinx.coroutines.launch
 import kollections.get
 import kollections.component1
 import kollections.component2
+import koncurrent.Awaited
 import kotlin.test.Test
 
 @IgnoreOSX
@@ -17,7 +17,7 @@ class AwaitedCanTrackProgress {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     fun user(): Awaited<String> {
-        val l = MutableAwaited<String>()
+        val l = Awaited<String>()
         val stages = l.setStages("Stage 1", "Stage 2")
         val s1 = stages[0]
         val s2 = stages[1]
@@ -37,7 +37,7 @@ class AwaitedCanTrackProgress {
     }
 
     fun stagedUser(): Awaited<String> {
-        val l = MutableAwaited<String>()
+        val l = Awaited<String>()
 
         scope.launch {
             val (reading, writing) = l.setStages("Reading", "Writing")

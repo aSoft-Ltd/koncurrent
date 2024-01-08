@@ -1,22 +1,16 @@
 import kommander.expect
-import koncurrent.Later
+import koncurrent.LaterTestResult
 import koncurrent.later.then
-import koncurrent.later.andThen
-import koncurrent.later.andZip
-import koncurrent.later.zip
-import koncurrent.later.catchTestResult
 import koncurrent.PendingLater
 import koncurrent.later.catch
 import koncurrent.later.finally
 import koncurrent.later.test
-import koncurrent.later.then
 import koncurrent.resolveWith
 import kotlin.test.Test
-import kotlin.test.fail
 
 class PendingLaterTest {
     @Test
-    fun should_be_able_to_resolve_a_pending_later():LaterTestResult {
+    fun should_be_able_to_resolve_a_pending_later(): LaterTestResult {
         val later = PendingLater<String>()
         later.resolveWith("Works")
         var resolved = false

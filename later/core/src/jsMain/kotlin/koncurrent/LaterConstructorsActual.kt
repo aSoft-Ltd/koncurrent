@@ -5,15 +5,15 @@ package koncurrent
 actual inline fun <T> Later(
     executor: Executor,
     noinline handler: ((resolve: (T) -> Unit, reject: ((Throwable) -> Unit)) -> Unit)
-): Later<out T> = MutablePromise(handler).unsafeCast<Later<T>>()
+): Later<T> = Promise(handler).unsafeCast<Later<T>>()
 
-actual fun <T> PendingLater(executor: Executor): PendingLater<T> {
+actual fun <T> PendingLater(executor: Executor): Later<T> {
     var resolver: Resolver<T>? = null
     var rejector: Rejecter? = null
-    return MutablePromise { res, rej ->
+    return Promise { res, rej ->
         resolver = res
         rejector = rej
-    }.unsafeCast<PendingLater<T>>().also {
+    }.unsafeCast<Later<T>>().also {
         it.resolver = resolver
         it.rejecter = rejector
     }
@@ -46,11 +46,11 @@ actual fun <T> PendingLater(executor: Executor): PendingLater<T> {
 actual inline fun <T> SuccessfulLater(
     value: T,
     executor: Executor
-): Later<out T> = MutablePromise { res, _ -> res(value) }.unsafeCast<Later<T>>()
+): Later<T> = Promise { res, _ -> res(value) }.unsafeCast<Later<T>>()
 actual inline fun FailedLater(
     error: Throwable,
     executor: Executor
-): Later<out Nothing> = MutablePromise<Nothing> {_,rej->rej(error)}.unsafeCast<Later<Nothing>>()
+): Later<Nothing> = Promise<Nothing> { _, rej->rej(error)}.unsafeCast<Later<Nothing>>()
 
 //
 //@JsExport

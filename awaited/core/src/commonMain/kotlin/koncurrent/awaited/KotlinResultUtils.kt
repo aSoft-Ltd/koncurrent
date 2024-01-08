@@ -1,7 +1,7 @@
 package koncurrent.awaited
 
-import koncurrent.FailedAwaited
 import koncurrent.Awaited
+import koncurrent.FailedAwaited
 import koncurrent.SuccessfulAwaited
 
 inline fun <D> Result<D>.toAwaited(): Awaited<D> = try {

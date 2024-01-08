@@ -5,19 +5,18 @@ import kase.Result
 import kase.Success
 import koncurrent.Executor
 import koncurrent.Later
-import koncurrent.MutablePromise
 import koncurrent.Promise
 
 @JsName("later_then")
-actual inline fun <T, R> Later<T>.then(executor: Executor, noinline onResolved: (T) -> R): Later<R> = then(onResolved)
-actual inline fun <T, R> Later<T>.then(noinline onResolved: (T) -> R): Later<R> = then(onResolved)
+actual inline fun <T, R> Later<T>.then(executor: Executor, noinline onResolved: (T) -> R): Later<R> = then(onResolved, null)
+actual fun <T, R> Later<T>.then(onResolved: (T) -> R): Later<R> = then(onResolved, null)
 
 actual inline fun <T, R> Later<T>.andThen(executor: Executor, noinline onResolved: (T) -> Later<R>): Later<R> = then(onResolved).unsafeCast<Later<R>>()
 actual inline fun <T, R> Later<T>.andThen(noinline onResolved: (T) -> Later<R>): Later<R> = then(onResolved).unsafeCast<Later<R>>()
 
 @JsName("later_catch")
-actual inline fun <T> Later<T>.catch(executor: Executor, noinline recover: (Throwable) -> T): Later<T> = unsafeCast<MutablePromise<T>>().catch(recover)
-actual inline fun <T> Later<T>.catch(noinline recover: (Throwable) -> T): Later<T> = unsafeCast<MutablePromise<T>>().catch(recover)
+actual inline fun <T> Later<T>.catch(executor: Executor, noinline recover: (Throwable) -> T): Later<T> = unsafeCast<Promise<T>>().catch(recover)
+actual inline fun <T> Later<T>.catch(noinline recover: (Throwable) -> T): Later<T> = unsafeCast<Promise<T>>().catch(recover)
 
 @JsName("later_finally") // so that js does not call the underline finally
 actual inline fun <T> Later<T>.finally(
