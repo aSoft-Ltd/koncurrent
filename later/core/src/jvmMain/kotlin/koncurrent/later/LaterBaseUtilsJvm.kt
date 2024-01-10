@@ -64,25 +64,19 @@ actual fun <T> Later<T>.finally(
     executor: Executor,
     cleanUp: (state: Result<T>) -> Unit
 ): Later<T> = whenCompleteAsync({ value, error ->
-    when {
-        value != null -> cleanUp(Success(value))
-        error != null -> cleanUp(Failure(error))
-        else /* value == null && err == null */ -> {
-            val err = IllegalStateException("Completable future didn't return with value or exception")
-            cleanUp(Failure(err))
-        }
+    if(error != null) {
+        cleanUp(Failure(error))
+    } else {
+        cleanUp(Success(value as T))
     }
 }, executor)
 
 actual fun <T> Later<T>.finally(
     cleanUp: (state: Result<T>) -> Unit
 ): Later<T> = whenCompleteAsync { value, error ->
-    when {
-        value != null -> cleanUp(Success(value))
-        error != null -> cleanUp(Failure(error))
-        else /* value == null && err == null */ -> {
-            val err = IllegalStateException("Completable future didn't return with value or exception")
-            cleanUp(Failure(err))
-        }
+    if(error != null) {
+        cleanUp(Failure(error))
+    } else {
+        cleanUp(Success(value as T))
     }
 }
