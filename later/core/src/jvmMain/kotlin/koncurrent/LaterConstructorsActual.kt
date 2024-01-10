@@ -7,6 +7,29 @@
 
 package koncurrent
 
+import kase.Executing
+import kase.ExecutorState
+import kase.Failure
+import kase.Result
+import kase.Success
+import kase.progress.ProgressBus
+import kase.progress.ProgressPublisher
+import kase.progress.VoidProgressBus
+import kase.toExecutorState
+import kollections.all
+import kollections.associate
+import kollections.List
+import kollections.emptyList
+import kollections.filterIsInstance
+import kollections.set
+import kollections.toMutableMap
+import koncurrent.later.finally
+import koncurrent.later.filterSuccess
+import koncurrent.later.mapValues
+import koncurrent.later.then
+import kotlinx.atomicfu.locks.ReentrantLock
+import kotlinx.atomicfu.locks.reentrantLock
+import kotlinx.atomicfu.locks.withLock
 import java.util.concurrent.CompletableFuture
 
 actual inline fun <T> Later(
@@ -30,17 +53,17 @@ actual inline fun <T> Later(
 
 actual inline fun <T> PendingLater(executor: Executor) = Later<T>()
 
-//inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Later<T> {
-//    val l = PendingLater<T>(executor = this)
-//    execute {
-//        try {
-//            l.resolveWith(builder(l))
-//        } catch (err: Throwable) {
-//            l.rejectWith(err)
-//        }
-//    }
-//    return l
-//}
+actual fun <T> Executor.later(bus: ProgressBus = VoidProgressBus, builder: ProgressPublisher.() -> T): Later<T> {
+    val future = CompletableFuture<T>()
+    execute {
+        try {
+            future.complete(builder(bus))
+        } catch (err: Throwable) {
+            future.completeExceptionally(err)
+        }
+    }
+    return future
+}
 
 
 actual inline fun <T> SuccessfulLater(
@@ -53,33 +76,34 @@ actual inline fun FailedLater(
     executor: Executor
 ): Later<Nothing> = CompletableFuture.failedFuture(error)
 
-//fun <T> SuccessfulLaters(vararg laters: Later<T>): Later<List<Success<T>>> = Laters(*laters).then { it.filterSuccess() }
-//
-//fun <T> SuccessfulLaterValues(vararg laters: Later<T>): Later<List<T>> = SuccessfulLaters(*laters).then { list ->
-//    list.mapValues()
-//}
-//
-//
-//private val lock: ReentrantLock = reentrantLock()
-//fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
-//    val later = LaterPromise<List<Result<T>>>(executor = Executors.current())
-//    if(laters.isEmpty()) {
-//        later.resolveWith(emptyList())
-//        return later
-//    }
-//    val inputs = laters.map { it as LaterPromise }
-//    var resolved = false
-//    inputs.forEach { l ->
-//        l.finally(Executors.current()) {
-//            if (!resolved) lock.withLock {
-//                val states = inputs.map { it.state }
-//                if (states.all { it is Result<Any?> }) {
-//                    resolved = true
-//                    val stateList = states.filterIsInstance<Result<T>>()
-//                    later.resolveWith(stateList)
-//                }
-//            }
-//        }
-//    }
-//    return later
-//}
+
+actual fun <T> Laters(them: Collection<Later<T>>) : Later<List<Result<T>>> = Laters(*them.toList().toTypedArray())
+
+private val lock: ReentrantLock = reentrantLock()
+actual fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
+    val executor = Executors.default()
+    val future = CompletableFuture<List<Result<T>>>()
+    if (laters.isEmpty()) {
+        future.complete(emptyList())
+        return future as Later<List<Result<T>>>
+    }
+    val inputs = laters.associate { it to (Executing() as ExecutorState<T>) }.toMutableMap()
+    inputs.keys.forEach { l ->
+        l.finally(executor) { res ->
+            lock.withLock {
+                val state = res.toExecutorState()
+                inputs[l] = state
+                if (inputs.values.all { it is Success || it is Failure }) {
+                    future.complete(inputs.values.filterIsInstance<Result<T>>())
+                }
+            }
+        }
+    }
+    return future as Later<List<Result<T>>>
+}
+
+actual inline fun <T> SuccessfulLaters(vararg laters: Later<T>): Later<List<Success<T>>> = Laters(*laters).then { it.filterSuccess() }
+
+actual inline fun <T> SuccessfulLaterValues(vararg laters: Later<T>): Later<List<T>> = SuccessfulLaters(*laters).then { list ->
+    list.mapValues()
+}

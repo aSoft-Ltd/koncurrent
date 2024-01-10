@@ -8,11 +8,11 @@ package koncurrent
 
 import java.util.concurrent.CompletableFuture
 
-actual typealias Later<T> = CompletableFuture<T>
+actual typealias Later<T> = CompletableFuture<out T>
 
-actual inline fun <T> Later<T>.resolveWith(value: T) {
-//    this as CompletableFuture<T>
-    complete(value)
+actual fun <T> Later<T>.resolveWith(value: T) : Boolean {
+    this as CompletableFuture<T>
+    return complete(value)
 }
 
-actual inline fun <T> Later<T>.rejectWith(error: Throwable) = completeExceptionally(error)
+actual fun <T> Later<T>.rejectWith(error: Throwable) = completeExceptionally(error)

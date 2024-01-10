@@ -23,8 +23,14 @@ inline fun <T> List<Success<T>>.mapValues(): List<T> = map { it.data }
 @JvmName("filterRejectedFromResult")
 inline fun <T> List<Result<T>>.filterRejected(): List<Failure<T>> = filterIsInstance<Failure<T>>()
 
-@JvmName("filterSuccessFromLater")
-inline fun <T> Later<List<Result<T>>>.filterFulfilled() = then { it.filterSuccess() }
+//@JvmName("filterSuccessFromLater")
+//inline fun <T> Later<List<Result<T>>>.filterFulfilled() : Later<List<Success<T>>> {
+//    TODO("koncurrent-later-core/commonMain/koncurrent/LaterFilterUtils.kt")
+//    return then { it.filterSuccess() }
+//}
 
-@JvmName("filterRejectedFromLater")
-inline fun <T> Later<List<Result<T>>>.filterRejected() = then { it.filterRejected() }
+//@JvmName("filterRejectedFromLater")
+//inline fun <T> Later<List<Result<T>>>.filterRejected() : Later<List<Failure<T>>> {
+//    TODO("koncurrent-later-core/commonMain/koncurrent/LaterFilterUtils.kt")
+////    then { it.filterRejected() }
+//}

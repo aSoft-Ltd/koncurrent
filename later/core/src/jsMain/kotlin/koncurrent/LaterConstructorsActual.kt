@@ -1,6 +1,33 @@
-@file:Suppress("FunctionName", "NOTHING_TO_INLINE")
+@file:Suppress(
+    "FunctionName",
+    "NOTHING_TO_INLINE",
+    "ACTUAL_WITHOUT_EXPECT"
+)
 
 package koncurrent
+
+import kase.Executing
+import kase.ExecutorState
+import kase.Failure
+import kase.Result
+import kase.Success
+import kase.progress.ProgressBus
+import kase.progress.ProgressPublisher
+import kase.progress.VoidProgressBus
+import kase.toExecutorState
+import kollections.List
+import kollections.all
+import kollections.associate
+import kollections.emptyList
+import kollections.filterIsInstance
+import kollections.keys
+import kollections.set
+import kollections.toMutableMap
+import kollections.values
+import koncurrent.later.finally
+import koncurrent.later.filterSuccess
+import koncurrent.later.mapValues
+import koncurrent.later.then
 
 actual inline fun <T> Later(
     executor: Executor,
@@ -19,76 +46,50 @@ actual fun <T> PendingLater(executor: Executor): Later<T> {
     }
 }
 
-//inline fun <T> Executor.later(noinline builder: ProgressPublisher.() -> T): Later<T> {
-//    val l = PendingLater<T>(executor = this)
-//    execute {
-//        try {
-//            l.resolveWith(builder(l))
-//        } catch (err: Throwable) {
-//            l.rejectWith(err)
-//        }
-//    }
-//    return l
-//}
-//
-//@JsName("wrapInLater")
-//inline fun <T> T.toLater(
-//    executor: Executor = Executors.current()
-//) : Later<T> = Later(this,executor)
-//
-//@JsExport
-//@JsName("laterOf")
-//inline fun <T> Later(
-//    value: T,
-//    executor: Executor = Executors.current()
-//): Later<T> = SuccessfulLater(value, executor)
-//
+actual fun <T> Executor.later(
+    bus: ProgressBus = VoidProgressBus,
+    builder: ProgressPublisher.() -> T
+): Later<T> = Promise { res, rej ->
+    execute {
+        try {
+            res(builder(bus))
+        } catch (err: Throwable) {
+            rej(err)
+        }
+    }
+}
+
 actual inline fun <T> SuccessfulLater(
     value: T,
     executor: Executor
 ): Later<T> = Promise { res, _ -> res(value) }.unsafeCast<Later<T>>()
+
 actual inline fun FailedLater(
     error: Throwable,
     executor: Executor
-): Later<Nothing> = Promise<Nothing> { _, rej->rej(error)}.unsafeCast<Later<Nothing>>()
+): Later<Nothing> = Promise<Nothing> { _, rej -> rej(error) }.unsafeCast<Later<Nothing>>()
 
-//
-//@JsExport
-//@JvmOverloads
-//fun TODOLater(
-//    message: String = "Not implemented",
-//    executor: Executor = Executors.current()
-//): Later<Nothing> = PendingLater<Nothing>(executor).apply {
-//    rejectWith(NotImplementedError(message))
-//}
-//
-//fun <T> SuccessfulLaters(vararg laters: Later<T>): Later<List<Success<T>>> = Laters(*laters).then { it.filterSuccess() }
-//
-//fun <T> SuccessfulLaterValues(vararg laters: Later<T>): Later<List<T>> = SuccessfulLaters(*laters).then { list ->
-//    list.mapValues()
-//}
-//
-//
-//private val lock: ReentrantLock = reentrantLock()
-//fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
-//    val later = LaterPromise<List<Result<T>>>(executor = Executors.current())
-//    if(laters.isEmpty()) {
-//        later.resolveWith(emptyList())
-//        return later
-//    }
-//    val inputs = laters.map { it as LaterPromise }
-//    var resolved = false
-//    inputs.forEach { l ->
-//        l.finally(Executors.current()) {
-//            if (!resolved) lock.withLock {
-//                val states = inputs.map { it.state }
-//                if (states.all { it is Result<Any?> }) {
-//                    resolved = true
-//                    val stateList = states.filterIsInstance<Result<T>>()
-//                    later.resolveWith(stateList)
-//                }
-//            }
-//        }
-//    }
-//    return later
-//}
+@JsName("laterFromCollection")
+actual fun <T> Laters(them: Collection<Later<T>>) : Later<List<Result<T>>> = Laters(*them.toList().toTypedArray())
+actual fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {
+    if (laters.isEmpty()) return Promise { res, _ -> res(emptyList()) }
+    val executor = Executors.default()
+    return Promise { res, _ ->
+        val inputs = laters.associate { it to (Executing() as ExecutorState<T>) }.toMutableMap()
+        inputs.keys.forEach { l ->
+            l.finally(executor) { res ->
+                val state = res.toExecutorState()
+                inputs[l] = state
+                if (inputs.values.all { it is Success || it is Failure }) {
+                    res(inputs.values.filterIsInstance<Result<T>>())
+                }
+            }
+        }
+    }
+}
+
+actual inline fun <T> SuccessfulLaters(vararg laters: Later<T>): Later<List<Success<T>>> = Laters(*laters).then { it.filterSuccess() }
+
+actual inline fun <T> SuccessfulLaterValues(vararg laters: Later<T>): Later<List<T>> = SuccessfulLaters(*laters).then { list ->
+    list.mapValues()
+}

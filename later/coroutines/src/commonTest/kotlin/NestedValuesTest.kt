@@ -30,6 +30,16 @@ class NestedValuesTest {
     }
 
     @Test
+    fun should_be_able_to_unwrap_cascaded_values(): LaterTestResult {
+        val executor = MockExecutor()
+        return Later(2, executor).andThen {
+            Later(it+1)
+        }.then {
+            expect(it).toBe(3)
+        }.test()
+    }
+
+    @Test
     fun should_be_able_to_unwrap_cascaded_values_with_a_callback(): LaterTestResult {
         val executor = MockExecutor()
         return Later(1, executor).andThen {
