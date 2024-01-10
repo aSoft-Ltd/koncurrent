@@ -30,7 +30,7 @@ fun <T> Later<T>.asDeferred(scope: CoroutineScope): Deferred<T> = scope.async(st
  */
 suspend fun <T> Later<T>.await(bus: ProgressBus = VoidProgressBus, onUpdate: ((ProgressState) -> Unit)? = null): T = suspendCancellableCoroutine { cont ->
     if (onUpdate != null) bus.onUpdate(onUpdate)
-    finally { res->
+    finally { res ->
         when (res) {
             is Success -> cont.resume(res.data)
             is Failure -> cont.resumeWithException(res.cause)

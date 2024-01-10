@@ -18,11 +18,8 @@ fun <T> CoroutineScope.later(
     val later = PendingLater<T>()
     launch(context, start) {
         try {
-            val res = block(bus)
-            println("Resolving with $res")
-            later.resolveWith(res)
+            later.resolveWith(block(bus))
         } catch (err: Throwable) {
-            println("Rejecting with ${err.message}")
             later.rejectWith(err)
         }
     }
