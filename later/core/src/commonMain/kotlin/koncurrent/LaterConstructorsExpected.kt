@@ -11,6 +11,7 @@ import kase.Result
 import kase.Success
 import kase.progress.ProgressPublisher
 import kollections.List
+import kollections.Collection
 
 expect fun <T> Later(
     executor: Executor = Executors.default(),

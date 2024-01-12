@@ -16,13 +16,16 @@ import kase.progress.ProgressPublisher
 import kase.progress.VoidProgressBus
 import kase.toExecutorState
 import kollections.List
+import kollections.Collection
 import kollections.all
 import kollections.associate
 import kollections.emptyList
 import kollections.filterIsInstance
 import kollections.keys
 import kollections.set
+import kollections.toList
 import kollections.toMutableMap
+import kollections.toTypedArray
 import kollections.values
 import koncurrent.later.finally
 import koncurrent.later.filterSuccess

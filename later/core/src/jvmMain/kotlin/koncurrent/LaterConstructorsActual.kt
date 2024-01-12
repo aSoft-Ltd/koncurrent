@@ -19,6 +19,7 @@ import kase.toExecutorState
 import kollections.all
 import kollections.associate
 import kollections.List
+import kollections.Collection
 import kollections.emptyList
 import kollections.filterIsInstance
 import kollections.set
