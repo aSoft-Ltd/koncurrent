@@ -32,3 +32,20 @@ fun CoroutineScope.estimate(bytes: Int, rate: EstimationRate = EstimationRate(),
         tx += rate.bytes
     }
 }
+
+fun CoroutineScope.estimate(
+    bytes: Double,
+    rate: EstimationRate = EstimationRate(),
+    max: Int = 100,
+    until: () -> Boolean,
+    onProgress: (Double) -> Unit
+): Later<Unit> = later {
+    var tx = 0.0
+    val tt = bytes
+    while (!until()) {
+        val p = max * (1 - exp(-tx / tt))
+        onProgress((p.toInt() * bytes) / 100)
+        delay(rate.duration)
+        tx += rate.bytes
+    }
+}
