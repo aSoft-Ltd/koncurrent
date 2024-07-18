@@ -3,6 +3,7 @@ package koncurrent.promise
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.js.Promise
 
 
 private inline val Any.isPromise get() : Boolean = asDynamic()?.constructor?.name == "Promise"
