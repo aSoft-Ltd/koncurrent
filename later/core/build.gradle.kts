@@ -42,6 +42,9 @@ kotlin {
 
             val wasmJsMain by getting {
                 dependsOn(awaitedMain)
+                dependencies {
+                    implementation(kotlinx.browser)?.because("We need native promises")
+                }
             }
 
             val wasmWasiMain by getting {
