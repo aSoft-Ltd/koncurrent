@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension
+import org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsEnvSpec
 import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask
 
 plugins {
@@ -16,24 +16,24 @@ kotlin {
     if (Targeting.LINUX) linuxTargets()
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(projects.koncurrentAwaitedCore)
-                api(projects.koncurrentExecutorsCoroutines)
-            }
+        commonMain.dependencies {
+            api(projects.koncurrentAwaitedCore)
+            api(projects.koncurrentExecutorsCoroutines)
         }
 
-        val commonTest by getting {
-            dependencies {
-                implementation(libs.kommander.coroutines)
-                implementation(projects.koncurrentAwaitedTest)
-                implementation(projects.koncurrentExecutorsMock)
-            }
+        commonTest.dependencies {
+            implementation(libs.kommander.coroutines)
+            implementation(projects.koncurrentAwaitedTest)
+            implementation(projects.koncurrentExecutorsMock)
+        }
+
+        if (Targeting.JVM) jvmTest.dependencies {
+            implementation(kotlin("test-junit5"))
         }
     }
 }
 
-rootProject.the<NodeJsRootExtension>().apply {
+rootProject.the<NodeJsEnvSpec>().apply {
     version = npm.versions.node.version.get()
     downloadBaseUrl = npm.versions.node.url.get()
 }

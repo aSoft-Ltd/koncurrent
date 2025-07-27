@@ -39,6 +39,10 @@ kotlin {
             }
         }
 
+        if (Targeting.JVM) jvmTest.dependencies {
+            implementation(kotlin("test-junit5"))
+        }
+
         if(Targeting.WASM) {
             val wasmJsMain by getting {
                 dependsOn(wasmMain)

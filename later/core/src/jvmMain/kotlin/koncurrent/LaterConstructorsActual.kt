@@ -52,7 +52,7 @@ actual inline fun <T> Later(
     return future
 }
 
-actual inline fun <T> PendingLater(executor: Executor) = Later<T>()
+actual inline fun <T> PendingLater(executor: Executor) = CompletableFuture<T>()
 
 actual fun <T> Executor.later(bus: ProgressBus = VoidProgressBus, builder: ProgressPublisher.() -> T): Later<T> {
     val future = CompletableFuture<T>()

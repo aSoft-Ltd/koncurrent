@@ -23,6 +23,10 @@ kotlin {
             implementation(projects.koncurrentLaterTest)
             implementation(projects.koncurrentExecutorsMock)
         }
+
+        if(Targeting.JVM) jvmTest.dependencies {
+            implementation(kotlin("test-junit5"))
+        }
     }
 }
 
