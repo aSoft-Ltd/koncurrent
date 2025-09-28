@@ -1,6 +1,7 @@
 @file:Suppress(
     "NO_ACTUAL_FOR_EXPECT", // removing this will make the K2/JVM not compile,
     "EXPECT_ACTUAL_MISMATCH", // removing this will make the K2/JVM not compile
+    "EXPECT_ACTUAL_INCOMPATIBLE_TYPE_PARAMETER_VARIANCE"
 )
 package koncurrent.later
 

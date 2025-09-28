@@ -2,7 +2,8 @@
     "FunctionName",
     "Since15",
     "NOTHING_TO_INLINE",
-    "ACTUAL_WITHOUT_EXPECT"
+    "ACTUAL_WITHOUT_EXPECT",
+    "EXPECT_ACTUAL_INCOMPATIBLE_TYPE_PARAMETER_VARIANCE"
 )
 
 package koncurrent
@@ -16,16 +17,16 @@ import kase.progress.ProgressBus
 import kase.progress.ProgressPublisher
 import kase.progress.VoidProgressBus
 import kase.toExecutorState
+import kollections.Collection
+import kollections.List
 import kollections.all
 import kollections.associate
-import kollections.List
-import kollections.Collection
 import kollections.emptyList
 import kollections.filterIsInstance
 import kollections.set
 import kollections.toMutableMap
-import koncurrent.later.finally
 import koncurrent.later.filterSuccess
+import koncurrent.later.finally
 import koncurrent.later.mapValues
 import koncurrent.later.then
 import kotlinx.atomicfu.locks.ReentrantLock
@@ -52,9 +53,9 @@ actual inline fun <T> Later(
     return future
 }
 
-actual inline fun <T> PendingLater(executor: Executor) = CompletableFuture<T>()
+actual inline fun <T> PendingLater(executor: Executor) = Later<T> { resolve, reject -> }
 
-actual fun <T> Executor.later(bus: ProgressBus = VoidProgressBus, builder: ProgressPublisher.() -> T): Later<T> {
+actual fun <T> Executor.later(bus: ProgressBus, builder: ProgressPublisher.() -> T): Later<T> {
     val future = CompletableFuture<T>()
     execute {
         try {
@@ -66,6 +67,7 @@ actual fun <T> Executor.later(bus: ProgressBus = VoidProgressBus, builder: Progr
     return future
 }
 
+actual fun <T> Executor.later(builder: ProgressPublisher.() -> T): Later<T> = later(VoidProgressBus, builder)
 
 actual inline fun <T> SuccessfulLater(
     value: T,
@@ -78,7 +80,7 @@ actual inline fun FailedLater(
 ): Later<Nothing> = CompletableFuture.failedFuture(error)
 
 
-actual fun <T> Laters(them: Collection<Later<T>>) : Later<List<Result<T>>> = Laters(*them.toList().toTypedArray())
+actual fun <T> Laters(them: Collection<Later<T>>): Later<List<Result<T>>> = Laters(*them.toList().toTypedArray())
 
 private val lock: ReentrantLock = reentrantLock()
 actual fun <T> Laters(vararg laters: Later<T>): Later<List<Result<T>>> {

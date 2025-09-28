@@ -2,7 +2,8 @@
     "FunctionName",
     "EXPECT_ACTUAL_INCOMPATIBILITY", // for kotlin jvm, K2 would fail to compile once removed
     "EXPECT_ACTUAL_MISMATCH", // removing this will make the K2/JVM not compile
-    "NO_ACTUAL_FOR_EXPECT"
+    "NO_ACTUAL_FOR_EXPECT",
+    "EXPECT_ACTUAL_INCOMPATIBLE_TYPE_PARAMETER_VARIANCE"
 )
 
 package koncurrent

@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.targets.js.npm.tasks.KotlinNpmInstallTask
-
 plugins {
     kotlin("multiplatform")
     id("tz.co.asoft.library")
@@ -37,15 +35,18 @@ kotlin {
             }
         }
 
-        if (Targeting.WASM) {
-
-            val wasmJsMain by getting {
-                dependsOn(awaitedMain)
-                dependencies {
-                    implementation(kotlinx.browser)?.because("We need native promises")
-                }
+        val webMain by creating {
+            dependsOn(commonMain)
+            dependencies {
+                implementation(kotlinx.browser)?.because("We need native promises")
             }
+        }
 
+        if(Targeting.JVM) jvmMain {
+            dependsOn(awaitedMain)
+        }
+
+        if (Targeting.WASM) {
             val wasmWasiMain by getting {
                 dependsOn(awaitedMain)
             }

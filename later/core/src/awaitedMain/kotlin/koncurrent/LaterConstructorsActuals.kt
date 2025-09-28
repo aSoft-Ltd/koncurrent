@@ -30,6 +30,8 @@ actual inline fun <T> PendingLater(executor: Executor): Later<T> = MutableAwaite
 
 actual fun <T> Executor.later(bus: ProgressBus = VoidProgressBus, builder: ProgressPublisher.() -> T): Later<T> = awaited(builder)
 
+actual fun <T> Executor.later(builder: ProgressPublisher.() -> T): Later<T> = awaited(builder)
+
 actual inline fun <T> SuccessfulLater(
     value: T,
     executor: Executor
