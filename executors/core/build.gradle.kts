@@ -9,7 +9,7 @@ description = "Primary building block needed for running concurrent multiplatfor
 
 kotlin {
     if (Targeting.JVM) jvm { library() }
-    if (Targeting.JS) js(IR) { library() }
+    if (Targeting.JS) js(IR) { library() } // untill https://youtrack.jetbrains.com/issue/KT-80014 gets fixed // untill https://youtrack.jetbrains.com/issue/KT-80014 gets fixed
     if (Targeting.WASM) wasmJs { library() }
     if (Targeting.WASM) wasmWasi { library() }
     val osxTargets = if (Targeting.OSX) osxTargets() else listOf()
@@ -40,7 +40,7 @@ kotlin {
             dependsOn(nonJvmMain)
         }
 
-        if (Targeting.JS) {
+        if (Targeting.JS) { // untill https://youtrack.jetbrains.com/issue/KT-80014 gets fixed
             val jsMain by getting {
                 dependsOn(jsAndWasmJsMain)
             }

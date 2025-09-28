@@ -2,6 +2,6 @@
 
 package koncurrent
 
-import kotlin.js.Promise
+import koncurrent.internal.TestPromise
 
-actual typealias AwaitedTestResult = Promise<JsAny?>
+actual typealias AwaitedTestResult = TestPromise

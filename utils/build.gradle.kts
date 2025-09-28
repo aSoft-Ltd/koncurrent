@@ -19,50 +19,5 @@ kotlin {
 
     val nativeTargets = osxTargets + /*ndkTargets + mingwTargets */ linuxTargets
 
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-
-            }
-        }
-
-
-        val nonJvmMain by creating {
-            dependsOn(commonMain)
-        }
-
-        val wasmAndNativeMain by creating {
-            dependsOn(nonJvmMain)
-        }
-
-        if(Targeting.JS) {
-            val jsMain by getting {
-                dependsOn(nonJvmMain)
-            }
-        }
-
-        if(Targeting.WASM) {
-
-            val wasmJsMain by getting {
-                dependsOn(wasmAndNativeMain)
-            }
-
-            val wasmWasiMain by getting {
-                dependsOn(wasmAndNativeMain)
-            }
-
-            val wasmJsTest by getting {
-                dependencies {
-                    implementation(kotlin("test"))
-                }
-            }
-        }
-
-        (nativeTargets).forEach {
-            val main by it.compilations.getting {}
-            main.defaultSourceSet {
-                dependsOn(wasmAndNativeMain)
-            }
-        }
-    }
+    applyDefaultHierarchyTemplate()
 }
