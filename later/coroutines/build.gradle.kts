@@ -7,7 +7,7 @@ description = "An multiplatform implementation of a Promised based api"
 
 kotlin {
     if (Targeting.JVM) jvm { library() }
-    if (Targeting.JS) js(IR) { library() } // untill https://youtrack.jetbrains.com/issue/KT-80014 gets fixed // untill https://youtrack.jetbrains.com/issue/KT-80014 gets fixed
+    if (Targeting.JS) js(IR) { library() } //
     if (Targeting.WASM) wasmJs { library() }
     if (Targeting.OSX) osxTargets()
     if (Targeting.LINUX) linuxTargets()
