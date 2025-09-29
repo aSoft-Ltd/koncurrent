@@ -42,11 +42,21 @@ kotlin {
             }
         }
 
-        if(Targeting.JVM) jvmMain {
+        if (Targeting.JS) {
+            val jsMain by getting {
+                dependsOn(webMain)
+            }
+        }
+
+        if (Targeting.JVM) jvmMain {
             dependsOn(awaitedMain)
         }
 
         if (Targeting.WASM) {
+            val wasmJsMain by getting {
+                dependsOn(webMain)
+            }
+
             val wasmWasiMain by getting {
                 dependsOn(awaitedMain)
             }

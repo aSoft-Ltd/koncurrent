@@ -21,9 +21,18 @@ kotlin {
             dependencies {
                 api(libs.kommander.coroutines)
                 api(projects.koncurrentLaterCore)
+                api(projects.koncurrentAwaitedTest)
                 api(projects.koncurrentExecutorsMock)
             }
         }
+
+//        val webMain by creating {
+//            dependsOn(commonMain)
+//            dependencies {
+//                implementation(projects.koncurrentAwaitedTest)
+//                implementation(kotlinx.browser)?.because("We need native promises")
+//            }
+//        }
 
         val wasmMain by creating {
             dependsOn(commonMain)
@@ -43,7 +52,7 @@ kotlin {
             implementation(kotlin("test-junit5"))
         }
 
-        if(Targeting.WASM) {
+        if (Targeting.WASM) {
             val wasmJsMain by getting {
                 dependsOn(wasmMain)
             }

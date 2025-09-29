@@ -2,4 +2,6 @@
 
 package koncurrent
 
-actual typealias LaterTestResult = Promise<Unit>
+import koncurrent.internal.TestPromise
+
+actual typealias LaterTestResult = TestPromise

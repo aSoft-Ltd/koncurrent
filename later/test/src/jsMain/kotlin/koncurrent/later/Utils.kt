@@ -6,12 +6,13 @@ import kase.Failure
 import kase.Success
 import koncurrent.Later
 import koncurrent.Promise
+import koncurrent.internal.TestPromise
 
-actual inline fun Later<out Any?>.test(): dynamic = Promise { resolve, reject ->
+actual inline fun Later<out Any?>.test(): TestPromise = Promise { resolve, reject ->
     finally { res ->
         when (res) {
             is Failure -> reject(res.cause)
             is Success -> resolve(res.data)
         }
     }
-}
+}.unsafeCast<TestPromise>()

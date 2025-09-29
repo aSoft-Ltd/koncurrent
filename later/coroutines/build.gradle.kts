@@ -24,8 +24,12 @@ kotlin {
             implementation(projects.koncurrentExecutorsMock)
         }
 
-        if(Targeting.JVM) jvmTest.dependencies {
+        if (Targeting.JVM) jvmTest.dependencies {
             implementation(kotlin("test-junit5"))
+        }
+
+        if (Targeting.JS) jsMain.dependencies {
+            api(projects.koncurrentLaterCore)
         }
     }
 }
