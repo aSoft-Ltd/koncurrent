@@ -15,58 +15,20 @@ kotlin {
     val linuxTargets = if (Targeting.LINUX) linuxTargets() else listOf()
 //    val mingwTargets = if (Targeting.MINGW) mingwTargets() else listOf()
 
-    val nativeTargets = osxTargets + /*ndkTargets + mingwTargets */ linuxTargets
+    applyDefaultHierarchyTemplate()
 
     sourceSets {
-        val commonMain by getting {
-            dependencies {
-                api(projects.koncurrentExecutorsCore)
-                api(projects.koncurrentUtils)
-                api(libs.kase.core)
-                api(libs.kollections.interoperable)
-                api(kotlinx.atomicfu)
-            }
+        commonMain.dependencies {
+            api(projects.koncurrentExecutorsCore)
+            api(projects.koncurrentUtils)
+            api(libs.kase.core)
+            api(libs.kollections.interoperable)
+            api(kotlinx.atomicfu)
+            api(projects.koncurrentAwaitedCore)
         }
 
-        val awaitedMain by creating {
-            dependsOn(commonMain)
-            dependencies {
-                api(projects.koncurrentAwaitedCore)
-            }
-        }
-
-        val webMain by creating {
-            dependsOn(commonMain)
-            dependencies {
-                implementation(kotlinx.browser)?.because("We need native promises")
-            }
-        }
-
-        if (Targeting.JS) {
-            val jsMain by getting {
-                dependsOn(webMain)
-            }
-        }
-
-        if (Targeting.JVM) jvmMain {
-            dependsOn(awaitedMain)
-        }
-
-        if (Targeting.WASM) {
-            val wasmJsMain by getting {
-                dependsOn(webMain)
-            }
-
-            val wasmWasiMain by getting {
-                dependsOn(awaitedMain)
-            }
-        }
-
-        (nativeTargets).forEach {
-            val main by it.compilations.getting {}
-            main.defaultSourceSet {
-                dependsOn(awaitedMain)
-            }
+        webMain.dependencies {
+            implementation(kotlinx.browser)?.because("We need native promises")
         }
     }
 }

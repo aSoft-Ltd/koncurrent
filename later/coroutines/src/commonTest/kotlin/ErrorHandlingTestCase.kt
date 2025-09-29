@@ -2,13 +2,8 @@ import kommander.IgnoreOSX
 import kommander.expect
 import koncurrent.Later
 import koncurrent.LaterTestResult
-import koncurrent.later.then
-import koncurrent.later.catch
-import koncurrent.later.then
 import koncurrent.MockExecutor
-import koncurrent.later.catch
-import koncurrent.later.test
-import koncurrent.later.then
+import koncurrent.awaited.test
 import kotlin.test.Test
 
 @IgnoreOSX

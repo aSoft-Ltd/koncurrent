@@ -4,9 +4,8 @@ import kommander.IgnoreOSX
 import kommander.expect
 import koncurrent.Later
 import koncurrent.Laters
-import koncurrent.later.filterSuccessValues
-import koncurrent.later.test
-import koncurrent.later.then
+import koncurrent.awaited.filterSuccessValues
+import koncurrent.awaited.test
 import kotlin.test.Test
 
 @IgnoreOSX

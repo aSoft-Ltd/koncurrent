@@ -8,6 +8,7 @@ import kase.progress.ProgressState
 import kase.progress.VoidProgressBus
 import koncurrent.FailedLater
 import koncurrent.Later
+import koncurrent.awaited.finally
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred

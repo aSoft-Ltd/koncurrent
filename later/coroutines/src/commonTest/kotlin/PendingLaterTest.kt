@@ -1,11 +1,8 @@
 import kommander.expect
 import koncurrent.LaterTestResult
-import koncurrent.later.then
 import koncurrent.PendingLater
-import koncurrent.later.catch
-import koncurrent.later.finally
-import koncurrent.later.test
-import koncurrent.resolveWith
+import koncurrent.awaited.finally
+import koncurrent.awaited.test
 import kotlin.test.Test
 
 class PendingLaterTest {
@@ -20,7 +17,7 @@ class PendingLaterTest {
         }.catch {
             throw it
         }.finally {
-            expect(resolved).toBe(true,"Later was not resolved when it should have been resolved")
+            expect(resolved).toBe(true, "Later was not resolved when it should have been resolved")
         }.test()
     }
 }

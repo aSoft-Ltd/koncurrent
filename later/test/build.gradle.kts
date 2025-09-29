@@ -26,14 +26,6 @@ kotlin {
             }
         }
 
-//        val webMain by creating {
-//            dependsOn(commonMain)
-//            dependencies {
-//                implementation(projects.koncurrentAwaitedTest)
-//                implementation(kotlinx.browser)?.because("We need native promises")
-//            }
-//        }
-
         val wasmMain by creating {
             dependsOn(commonMain)
             dependencies {

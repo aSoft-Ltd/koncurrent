@@ -1,21 +1,18 @@
 import kase.progress.ProgressBus
 import kase.progress.VoidProgressBus
+import kollections.component1
+import kollections.component2
+import kollections.get
 import kommander.IgnoreOSX
 import kommander.expect
-import koncurrent.later.then
-import koncurrent.later.test
+import koncurrent.Later
+import koncurrent.PendingLater
+import koncurrent.awaited.test
+import koncurrent.onUpdate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kollections.get
-import kollections.component1
-import kollections.component2
-import koncurrent.PendingLater
-import koncurrent.Later
-import koncurrent.later.then
-import koncurrent.onUpdate
-import koncurrent.resolveWith
 import kotlin.test.Test
 
 @IgnoreOSX

@@ -1,6 +1,6 @@
 import koncurrent.MockExecutor
 import koncurrent.awaited
-import koncurrent.awaited.await
+import koncurrent.later.await
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Ignore

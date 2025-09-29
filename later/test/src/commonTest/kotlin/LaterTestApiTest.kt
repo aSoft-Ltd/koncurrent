@@ -2,9 +2,9 @@ import kommander.expect
 import koncurrent.Later
 import koncurrent.LaterTestResult
 import koncurrent.MockExecutor
-import koncurrent.later.andThen
-import koncurrent.later.test
-import koncurrent.later.then
+import koncurrent.awaited.andThen
+import koncurrent.awaited.test
+import koncurrent.awaited.then
 import kotlin.test.Test
 
 class LaterTestApiTest {
